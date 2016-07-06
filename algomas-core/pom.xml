@@ -2,20 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>algomas</artifactId>
+    <groupId>nl.knaw.huygens</groupId>
+    <version>1.1.0</version>
+  </parent>
   <modelVersion>4.0.0</modelVersion>
-  <packaging>pom</packaging>
-  <modules>
-    <module>algomas-benchmark</module>
-    <module>algomas-core</module>
-  </modules>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
-  <groupId>nl.knaw.huygens</groupId>
-  <artifactId>algomas</artifactId>
+  <groupId>nl.knaw.huygens.algomas</groupId>
+  <artifactId>algomas-core</artifactId>
   <version>1.1.0</version>
+
   <build>
     <plugins>
       <plugin>
@@ -27,15 +24,16 @@
         </configuration>
       </plugin>
     </plugins>
-
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh</artifactId>
-        <version>2.2</version>
-      </extension>
-    </extensions>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <distributionManagement>
     <repository>
