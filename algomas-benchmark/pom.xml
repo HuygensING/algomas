@@ -36,7 +36,6 @@ questions.
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>nl.knaw.huygens.algomas</groupId>
   <artifactId>algomas-benchmark</artifactId>
   <packaging>jar</packaging>
 

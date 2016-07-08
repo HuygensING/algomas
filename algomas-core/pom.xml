@@ -9,7 +9,6 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>nl.knaw.huygens.algomas</groupId>
   <artifactId>algomas-core</artifactId>
   <version>1.3.0</version>
 

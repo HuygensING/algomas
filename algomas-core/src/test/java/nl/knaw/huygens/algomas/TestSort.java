@@ -33,11 +33,11 @@ import java.util.Random;
 import static java.util.Collections.shuffle;
 
 public class TestSort {
-  int[] seeds = {1, 6, 161, 16, 0, 9612, 126, 778, 125, 991};
+  private final int[] seeds = {1, 6, 161, 16, 0, 9612, 126, 778, 125, 991};
 
   @Test
   public void partialSortIntegers() {
-    List<Integer> list = new ArrayList<Integer>();
+    List<Integer> list = new ArrayList<>();
     for (int i = 0; i < 1217; i++) {
       list.add(i);
     }
@@ -56,8 +56,7 @@ public class TestSort {
   @Test
   public void selectStrings() {
     List<String> list = Arrays
-      .asList(new String[]{"foo", "bar", "baz", "foobar", "quux",
-        "quuux", "ratata", "xyzzy"});
+      .asList("foo", "bar", "baz", "foobar", "quux", "quuux", "ratata", "xyzzy");
 
     for (int seed : seeds) {
       shuffle(list, new Random(seed));

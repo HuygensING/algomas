@@ -58,8 +58,8 @@ public class LogAddExpBenchmark {
   @Benchmark
   public static double benchmarkLogAddExp() {
     double total = Math.log(.5);
-    for (int i = 0; i < values.length; i++) {
-      total = ExtMath.logAddExp(total, values[i]);
+    for (double x : values) {
+      total = ExtMath.logAddExp(total, x);
     }
     return total;
   }
@@ -67,8 +67,8 @@ public class LogAddExpBenchmark {
   @Benchmark
   public static double benchmarkLogAddExpFastMath() {
     double total = Math.log(.5);
-    for (int i = 0; i < values.length; i++) {
-      total = logAddExp(total, values[i]);
+    for (double x : values) {
+      total = logAddExp(total, x);
     }
     return total;
   }
