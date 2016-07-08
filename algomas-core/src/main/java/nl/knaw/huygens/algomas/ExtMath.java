@@ -12,4 +12,11 @@ public class ExtMath {
     }
     return x + Math.log1p(Math.exp(y - x));
   }
+
+  /**
+   * Standard logistic function: 1/(1 + exp(-z)).
+   */
+  public static double logistic(double z) {
+    return .5 * (1 + Math.tanh(.5 * z));
+  }
 }
