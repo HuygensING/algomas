@@ -13,7 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <groupId>nl.knaw.huygens</groupId>
+  <groupId>nl.knaw.huygens.algomas</groupId>
   <artifactId>algomas</artifactId>
   <version>1.3.0</version>
 
