@@ -28,18 +28,35 @@ import java.util.stream.Stream;
 
 public class NGrams {
   /**
-   * Generate n-grams of the items in listof length at least minN, at most maxN (inclusive).
+   * Generate character n-grams of s, of lengths in the range [minN, maxN]
+   *
+   * @return Returns a sequential stream of n-grams, represented as CharSequences.
+   */
+  public static Stream<CharSequence> ofChars(int minN, int maxN, CharSequence s) {
+    boundsCheck(minN, maxN);
+
+    final int length = s.length();
+    return IntStream.range(0, length).boxed()
+      .flatMap(start -> IntStream.range(minN, Math.min(maxN, length - start) + 1)
+        .mapToObj(n -> s.subSequence(start, start + n)));
+  }
+
+  /**
+   * Generate n-grams of length n from s.
+   */
+  public static Stream<CharSequence> ofChars(int n, CharSequence s) {
+    return ofChars(n, n, s);
+  }
+
+  /**
+   * Generate n-grams of the items in list, of lengths in the range [minN, maxN].
    * <p>
    * An n-gram is a sequence of consecutive items of a list, typically a list of tokens in a text.
    * <p>
    * The n-grams are ordered first by starting position in list, then by length.
    */
   public static <T> Stream<List<T>> generate(int minN, int maxN, List<T> list) {
-    if (minN > maxN) {
-      throw new IllegalArgumentException("minN should be <= maxN");
-    } else if (maxN <= 0) {
-      throw new IllegalArgumentException("maxN should be >= 0");
-    }
+    boundsCheck(minN, maxN);
 
     return IntStream.range(0, list.size()).boxed()
       .flatMap(start -> IntStream.range(minN, Math.min(maxN, list.size() - start) + 1)
@@ -51,5 +68,13 @@ public class NGrams {
    */
   public static <T> Stream<List<T>> generate(List<T> list, int n) {
     return generate(n, n, list);
+  }
+
+  private static void boundsCheck(int minN, int maxN) {
+    if (minN > maxN) {
+      throw new IllegalArgumentException("minN should be <= maxN");
+    } else if (maxN <= 0) {
+      throw new IllegalArgumentException("maxN should be >= 0");
+    }
   }
 }
