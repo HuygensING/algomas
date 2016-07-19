@@ -23,25 +23,29 @@ package nl.knaw.huygens.algomas;
  */
 
 import nl.knaw.huygens.algomas.nlp.NGrams;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class TestNGrams {
   @Test
   public void simpleChars() {
-    Object[] unigrams = NGrams.ofChars(1, "hello").toArray();
-    Assert.assertArrayEquals(new Object[]{"h", "e", "l", "l", "o"}, unigrams);
+    Object[] unigrams = NGrams.ofChars(1, "hello")
+      .map(CharSequence::toString).toArray();
+    assertArrayEquals(new Object[]{"h", "e", "l", "l", "o"}, unigrams);
+
+    Object[] bigrams = NGrams.ofChars(2, "HALLO")
+      .map(CharSequence::toString).toArray();
+    assertArrayEquals(new Object[]{"HA", "AL", "LL", "LO"}, bigrams);
 
     String msg = "héllo, wörld";
     NGrams.ofChars(2, 100, msg).forEach(ngram -> {
-      Assert.assertTrue(ngram.length() >= 2);
-      Assert.assertTrue(ngram.length() <= msg.length());
+      assertTrue(ngram.length() >= 2);
+      assertTrue(ngram.length() <= msg.length());
     });
 
     assertEquals(NGrams.ofChars(2, msg.length(), msg).count(),
@@ -51,7 +55,6 @@ public class TestNGrams {
   @Test
   public void simpleList() {
     List<List<String>> ngrams = ngramList(1, 1, "hello", "world");
-    System.out.println(ngrams);
     assertEquals(asList("hello"), ngrams.get(0));
     assertEquals(asList("world"), ngrams.get(1));
     assertEquals(2, ngrams.size());

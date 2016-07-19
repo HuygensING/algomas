@@ -35,10 +35,11 @@ public class NGrams {
   public static Stream<CharSequence> ofChars(int minN, int maxN, CharSequence s) {
     boundsCheck(minN, maxN);
 
-    final int length = s.length();
+    String str = s.toString();
+    final int length = str.length();
     return IntStream.range(0, length).boxed()
       .flatMap(start -> IntStream.range(minN, Math.min(maxN, length - start) + 1)
-        .mapToObj(n -> s.subSequence(start, start + n)));
+        .mapToObj(n -> new StringSlice(str, start, start + n)));
   }
 
   /**
@@ -58,8 +59,9 @@ public class NGrams {
   public static <T> Stream<List<T>> generate(int minN, int maxN, List<T> list) {
     boundsCheck(minN, maxN);
 
-    return IntStream.range(0, list.size()).boxed()
-      .flatMap(start -> IntStream.range(minN, Math.min(maxN, list.size() - start) + 1)
+    final int size = list.size();
+    return IntStream.range(0, size).boxed()
+      .flatMap(start -> IntStream.range(minN, Math.min(maxN, size - start) + 1)
         .mapToObj(n -> list.subList(start, start + n)));
   }
 
