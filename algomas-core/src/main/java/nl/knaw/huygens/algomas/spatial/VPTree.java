@@ -22,6 +22,7 @@ package nl.knaw.huygens.algomas.spatial;
  * #L%
  */
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
@@ -42,7 +43,9 @@ import static java.util.stream.IntStream.range;
  *
  * @param <T> The type of points.
  */
-public final class VPTree<T> implements Iterable<T> {
+public final class VPTree<T> implements Iterable<T>, Serializable {
+  private static final long serialVersionUID = 1L;
+
   // Construction algorithm.
   @SuppressWarnings("serial")
   private final class ConstructTask extends RecursiveTask<Node<T>> {
@@ -263,7 +266,9 @@ public final class VPTree<T> implements Iterable<T> {
     }
   }
 
-  private static final class Node<T> {
+  private static final class Node<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     final T center;
     final double radius;
     final Node<T> inside, outside;

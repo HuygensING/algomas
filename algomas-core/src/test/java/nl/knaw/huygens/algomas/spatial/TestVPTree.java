@@ -27,9 +27,11 @@ import nl.knaw.huygens.algomas.nlp.LevenshteinDamerau;
 import org.junit.Test;
 
 import java.awt.geom.Point2D;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -127,12 +129,29 @@ public class TestVPTree {
   }
 
   @Test
+  public void serializable() throws Exception {
+    Random rnd = new Random(0xb000);
+    List<Point2D> points = Stream.generate(() ->
+      new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian()))
+      .limit(100).collect(Collectors.toList());
+    VPTree<Point2D> tree = new VPTree<>(
+      (Metric<Point2D> & Serializable) Point2D::distance, points);
+
+    ByteArrayOutputStream buf = new ByteArrayOutputStream();
+    new ObjectOutputStream(buf).writeObject(tree);
+    VPTree<Point2D> reconstructed = (VPTree<Point2D>) new ObjectInputStream(
+      new ByteArrayInputStream(buf.toByteArray())).readObject();
+    assertEquals(tree.size(), reconstructed.size());
+    assertEquals(tree.stream().collect(Collectors.toSet()),
+      reconstructed.stream().collect(Collectors.toSet()));
+  }
+
+  @Test
   public void radiusQuery() {
-    List<Point2D> points = new ArrayList<>();
     Random rnd = new Random(0xfeefee);
-    for (int i = 0; i < 1000; i++) {
-      points.add(new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian()));
-    }
+    List<Point2D> points = Stream.generate(() ->
+      new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian()))
+      .limit(1000).collect(Collectors.toList());
     VPTree<Point2D> tree = new VPTree<Point2D>(Point2D::distance, points);
 
     Point2D query = new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian());
