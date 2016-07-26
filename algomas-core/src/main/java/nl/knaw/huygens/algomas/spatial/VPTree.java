@@ -22,6 +22,8 @@ package nl.knaw.huygens.algomas.spatial;
  * #L%
  */
 
+import com.google.common.collect.Lists;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
@@ -284,15 +286,21 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
   private final Metric<T> metric;
   private final Node<T> root;
 
-  public VPTree(Metric<T> metric, Collection<T> points) {
+  public VPTree(Metric<T> metric, Iterable<T> points) {
     this(metric, points, new SplittableRandom());
   }
 
-  public VPTree(Metric<T> metric, Collection<T> points,
-                SplittableRandom rnd) {
+  /**
+   * Construct VPTree from given points.
+   *
+   * @param metric Metric (distance function).
+   * @param points Collection of points to store in the tree.
+   * @param rnd    Random number generator.
+   */
+  public VPTree(Metric<T> metric, Iterable<T> points, SplittableRandom rnd) {
     this.metric = metric;
     root = ForkJoinPool.commonPool()
-      .invoke(new ConstructTask(rnd, new ArrayList<>(points)));
+      .invoke(new ConstructTask(rnd, Lists.newArrayList(points)));
   }
 
   public Metric<T> getMetric() {
