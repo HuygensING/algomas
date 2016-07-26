@@ -213,9 +213,9 @@ public final class VPTree<T> implements Iterable<T> {
           .forEach(j -> dist[j] = metric.distance(rest.get(j), candidate));
 
         double mean = Arrays.stream(dist, start, end).average().getAsDouble();
-        // spread = (end - start) * Mean absolute deviation.
+        // spread = mean absolute deviation.
         double spread = Arrays.stream(dist, start, end)
-          .map(d -> abs(d - mean)).sum();
+          .map(d -> abs(d - mean)).average().getAsDouble();
 
         if (spread > bestSpread) {
           bestIndex = i;
