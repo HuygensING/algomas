@@ -62,7 +62,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
     }
 
     @Override
-    protected Node<T> compute() {
+    protected final Node<T> compute() {
       int nPoints = points.size();
       if (nPoints == 0) {
         return null;

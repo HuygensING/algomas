@@ -36,6 +36,7 @@ package nl.knaw.huygens.algomas.spatial;
  * <p>
  * {@code distance(x, z) <= distance(x, y) + distance(y, z)}
  */
+@FunctionalInterface
 public interface Metric<T> {
   double distance(T a, T b);
 }
