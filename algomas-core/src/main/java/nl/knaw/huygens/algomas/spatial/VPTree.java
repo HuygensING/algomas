@@ -254,7 +254,9 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * An {@code Entry} instance packages a point and its distance from a query point.
    * The instance does not record the query point itself.
    */
-  public static final class Entry<T> {
+  public static final class Entry<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public final double distance;
     public final T point;
 
