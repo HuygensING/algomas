@@ -22,9 +22,12 @@ package nl.knaw.huygens.algomas;
  * #L%
  */
 
-import java.util.Comparator;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Iterator;
-import java.util.function.ToDoubleFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Functional programming utilities.
@@ -44,5 +47,65 @@ public class Functional {
    */
   public static <T> Iterable<T> in(Iterator<T> iter) {
     return () -> iter;
+  }
+
+  /**
+   * The uncheck methods turn throwing consumers/functions/suppliers into
+   * ordinary ones by wrapping them in code that translates checked exceptions
+   * into unchecked ones.
+   * <p>
+   * An {@link IOException} becomes an {@link UncheckedIOException}; any other
+   * {@link Exception} becomes a {@link RuntimeException} with the original
+   * exception as its cause.
+   */
+  public static <T> Consumer<T> uncheck(ThrowingConsumer<T> consumer) {
+    return (x) -> {
+      try {
+        consumer.accept(x);
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    };
+  }
+
+  public static <T, R> Function<T, R> uncheck(ThrowingFunction<T, R> function) {
+    return (x) -> {
+      try {
+        return function.apply(x);
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    };
+  }
+
+  public static <T> Supplier<T> uncheck(ThrowingSupplier<T> supplier) {
+    return () -> {
+      try {
+        return supplier.get();
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    };
+  }
+
+  @FunctionalInterface
+  public interface ThrowingConsumer<T> {
+    void accept(T arg) throws Exception;
+  }
+
+  @FunctionalInterface
+  public interface ThrowingFunction<T, R> {
+    R apply(T arg) throws Exception;
+  }
+
+  @FunctionalInterface
+  public interface ThrowingSupplier<T> {
+    T get() throws Exception;
   }
 }

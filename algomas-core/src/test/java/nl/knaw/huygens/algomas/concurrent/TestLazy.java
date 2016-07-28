@@ -32,6 +32,7 @@ import java.util.function.UnaryOperator;
 
 import static com.google.common.primitives.Ints.asList;
 import static java.util.stream.IntStream.range;
+import static nl.knaw.huygens.algomas.Functional.uncheck;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -60,16 +61,12 @@ public class TestLazy {
 
   private void multiThread(UnaryOperator<Supplier<Integer>> newLazy) {
     AtomicInteger nCalls = new AtomicInteger();
-    Supplier<Integer> lazy = newLazy.apply(() -> {
-      try {
-        Thread.sleep(40);
-        int i = nCalls.incrementAndGet();
-        Thread.sleep(40);
-        return i;
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    });
+    Supplier<Integer> lazy = newLazy.apply(uncheck(() -> {
+      Thread.sleep(40);
+      int i = nCalls.incrementAndGet();
+      Thread.sleep(40);
+      return i;
+    }));
 
     Thread thr1 = new Thread(lazy::get);
     Thread thr2 = new Thread(lazy::get);
