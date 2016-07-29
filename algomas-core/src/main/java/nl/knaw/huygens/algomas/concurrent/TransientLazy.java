@@ -52,13 +52,15 @@ public class TransientLazy<T> implements Serializable, Supplier<T> {
 
   @Override
   public T get() {
-    if (value == null) {
+    T result = value;
+    if (result == null) {
       synchronized (this) {
-        if (value == null) {
-          value = supplier.get();
+        result = value;
+        if (result == null) {
+          value = result = supplier.get();
         }
       }
     }
-    return value;
+    return result;
   }
 }
