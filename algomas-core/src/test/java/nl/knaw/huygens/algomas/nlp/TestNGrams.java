@@ -1,4 +1,4 @@
-package nl.knaw.huygens.algomas;
+package nl.knaw.huygens.algomas.nlp;
 
 /*
  * #%L
@@ -22,7 +22,6 @@ package nl.knaw.huygens.algomas;
  * #L%
  */
 
-import nl.knaw.huygens.algomas.nlp.NGrams;
 import org.junit.Test;
 
 import java.util.List;
