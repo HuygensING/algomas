@@ -41,11 +41,6 @@ public class Sort {
   /**
    * Partially sort the list l, so that the first k elements are the k
    * smallest, in order according to comp.
-   * <p>
-   * The code
-   * <pre>
-   *
-   * </pre>
    */
   public static <T> void partial(List<T> l, Comparator<T> comp, int k) {
     int n = l.size();
