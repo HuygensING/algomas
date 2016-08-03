@@ -5,12 +5,12 @@
   <parent>
     <artifactId>algomas</artifactId>
     <groupId>nl.knaw.huygens.algomas</groupId>
-    <version>1.6.1</version>
+    <version>1.7.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>algomas-core</artifactId>
-  <version>1.6.1</version>
+  <version>1.7.0</version>
 
   <build>
     <plugins>
