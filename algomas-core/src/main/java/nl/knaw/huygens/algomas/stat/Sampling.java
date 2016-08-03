@@ -22,10 +22,81 @@ package nl.knaw.huygens.algomas.stat;
  * #L%
  */
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.function.IntUnaryOperator;
 
 public class Sampling {
+  private static class IteratorWithoutReplacement<E> implements Iterator<E> {
+    private final Iterator<E> input;
+    private int inputSize;
+    private final IntUnaryOperator nextInt;
+    private int sampleSize;
+
+    private IteratorWithoutReplacement(Iterator<E> input, int inputSize, int sampleSize,
+                                       IntUnaryOperator nextInt) {
+
+      this.input = input;
+      this.inputSize = inputSize;
+      this.sampleSize = sampleSize;
+      this.nextInt = nextInt;
+    }
+
+    // hasNext() and next() implement a lazy version of
+    // withoutReplacement(int, int, IntUnaryOperator)'s algorithm.
+    @Override
+    public final boolean hasNext() {
+      return sampleSize > 0;
+    }
+
+    @Override
+    public final E next() {
+      E result = null;
+      do {
+        result = input.next();
+      } while (nextInt.applyAsInt(inputSize--) >= sampleSize);
+      sampleSize--;
+      return result;
+    }
+  }
+
+  /**
+   * Uniform random sample, without replacement, of the elements in the given iterator.
+   *
+   * @param size       Number of elements in iterator (or lower bound).
+   * @param sampleSize Size of resulting sample.
+   * @param nextInt    Random number generator: nextInt.applyAsInt(k) should return
+   *                   a uniform random number in [0..k).
+   * @return An iterator that produces a random sample of iterator's elements.
+   */
+  public static <E> Iterator<E> withoutReplacement(Iterator<E> iterator, int size, int sampleSize,
+                                                   IntUnaryOperator nextInt) {
+    return new IteratorWithoutReplacement<E>(iterator, size, sampleSize, nextInt);
+  }
+
+  /**
+   * Uniform random sample, without replacement, of the elements in the given collection.
+   *
+   * @param sampleSize Size of resulting sample.
+   * @param nextInt    Random number generator: nextInt.applyAsInt(k) should return
+   *                   a uniform random number in [0..k).
+   * @return An iterator that produces a random sample of collection's elements.
+   */
+  public static <E> Iterator<E> withoutReplacement(Collection<E> collection, int sampleSize,
+                                                   IntUnaryOperator nextInt) {
+    return withoutReplacement(collection.iterator(), collection.size(), sampleSize, nextInt);
+  }
+
+  public static <E> Iterator<E> withoutReplacement(Collection<E> collection, int sampleSize,
+                                                   Random rnd) {
+    return withoutReplacement(collection, sampleSize, rnd::nextInt);
+  }
+
+  public static <E> Iterator<E> withoutReplacement(Collection<E> collection, int sampleSize) {
+    return withoutReplacement(collection, sampleSize, new Random());
+  }
+
   /**
    * Uniform random sample, without replacement, of the integers [0..n).
    *

@@ -24,11 +24,15 @@ package nl.knaw.huygens.algomas.stat;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static org.junit.Assert.*;
 
@@ -72,5 +76,23 @@ public class TestSampling {
       .mapToDouble(x -> (x / (float) (ROUNDS * SAMPLE_SIZE))).summaryStatistics();
     assertTrue(stats.getMax() < 1.03 * stats.getAverage());
     assertTrue(stats.getMin() > 0.97 * stats.getAverage());
+  }
+
+  @Test
+  public void iterator() {
+    List<String> strings = asList("foo", "bar", "baz", "quux", "null");
+    for (int seed : new int[]{1, 2, 3, 4, 5}) {
+      assertEquals(strings,
+        newArrayList(Sampling.withoutReplacement(strings, strings.size(), new Random(seed))));
+
+      Object[] fromIntegers = Arrays.stream(
+        Sampling.withoutReplacement(strings.size(), 3, new Random(seed)))
+        .mapToObj(strings::get).toArray();
+
+      Object[] fromIterator = newArrayList(
+        Sampling.withoutReplacement(strings, 3, new Random(seed)))
+        .toArray();
+      assertArrayEquals(fromIntegers, fromIterator);
+    }
   }
 }
