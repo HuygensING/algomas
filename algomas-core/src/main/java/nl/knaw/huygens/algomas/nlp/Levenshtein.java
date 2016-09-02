@@ -29,9 +29,9 @@ public class Levenshtein {
    * When maxDist is small, this method is faster than actually computing the
    * distance, then taking the min.
    *
-   * @param a
-   * @param b
-   * @param maxDist
+   * @param a       First string.
+   * @param b       Second string.
+   * @param maxDist Bound on distance.
    * @return The Levenshtein distance or maxDist+1, whichever is smaller.
    */
   public static int boundedDistance(String a, String b, int maxDist) {
@@ -103,9 +103,8 @@ public class Levenshtein {
    * <p>
    * Each edit operation has unit cost.
    *
-   * @param a
-   * @param b
-   * @return
+   * @param a First string.
+   * @param b Second string.
    */
   public static int distance(String a, String b) {
     int m = a.length();

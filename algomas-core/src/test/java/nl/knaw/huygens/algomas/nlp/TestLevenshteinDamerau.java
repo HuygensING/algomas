@@ -33,18 +33,20 @@ public class TestLevenshteinDamerau {
 
   @Test
   public void simple() {
-    for (String word : new String[]{"bra", "bard", "br", "car"})
+    for (String word : new String[]{"bra", "bard", "br", "car"}) {
       assertEquals(1, LevenshteinDamerau.distance("bar", word));
+    }
   }
 
   @Test
   public void compareWithLevenshtein() {
     for (int i = 0; i < words.length; i++) {
       for (int j = i + 1; j < words.length; j++) {
-        String a = words[i], b = words[j];
+        String a = words[i];
+        String b = words[j];
         int dl = LevenshteinDamerau.distance(a, b);
         int l = Levenshtein.distance(a, b);
-        // System.out.format("%s %s %d %d\n", a, b, dl, l);
+        // System.out.format("%s %s %d %d\n", strA, strB, dl, l);
         Assert.assertTrue(
           String.format("%d > %d for %s, %s", dl, l, a, b),
           dl <= l);

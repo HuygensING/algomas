@@ -24,7 +24,12 @@ package nl.knaw.huygens.algomas.concurrent;
 
 import org.junit.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -108,7 +113,7 @@ public class TestLazy {
   public void serializeTransientLazy() throws Exception {
     TransientLazy<List<Integer>> lazy = new TransientLazy<>((Supplier<List<Integer>> & Serializable) () ->
       asList(range(0, 10000).toArray()));
-    List<Integer> list = lazy.get(); // Force evaluation
+    final List<Integer> list = lazy.get(); // Force evaluation
 
     ByteArrayOutputStream buf = new ByteArrayOutputStream();
     new ObjectOutputStream(buf).writeObject(lazy);

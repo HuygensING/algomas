@@ -150,7 +150,8 @@ public class Sort {
     T pivot = a.get(pivotIndex);
     a.set(pivotIndex, a.get(lo));
     a.set(lo, pivot);
-    int i = lo, j = hi;
+    int i = lo;
+    int j = hi;
 
     for (; ; ) {
       do {

@@ -40,10 +40,6 @@ public class Functional {
    * <pre>
    *     for (T x : in(iterator)) { process(x); }
    * </pre>
-   *
-   * @param iter
-   * @param <T>
-   * @return
    */
   public static <T> Iterable<T> in(Iterator<T> iter) {
     return () -> iter;

@@ -25,7 +25,13 @@ package nl.knaw.huygens.algomas.spatial;
 import com.google.common.collect.Lists;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.SplittableRandom;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 import java.util.stream.Stream;
@@ -75,7 +81,8 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
         case 1:
           return singleton(points.get(0));
         case 2:
-          T vantage, other;
+          T vantage;
+          T other;
           if (rnd.nextBoolean()) {
             vantage = points.get(0);
             other = points.get(1);
@@ -87,13 +94,14 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
             singleton(other), null);
         case 3:
           return construct3();
+        default:
       }
 
       T vantagePoint = selectVantage();
 
-      range(0, points.size()).parallel()
-        .forEach(i -> dist[i] = metric.distance(points.get(i),
-          vantagePoint));
+      range(0, points.size())
+        .parallel()
+        .forEach(i -> dist[i] = metric.distance(points.get(i), vantagePoint));
 
       int medianIndex = selectMedian();
       double medianDistance = dist[medianIndex];
@@ -111,7 +119,9 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
 
     // Brute-force specialization of construct() for points.size() == 3.
     private Node<T> construct3() {
-      T p0 = points.get(0), p1 = points.get(1), p2 = points.get(2);
+      T p0 = points.get(0);
+      T p1 = points.get(1);
+      T p2 = points.get(2);
       double d01 = metric.distance(p0, p1);
       double d02 = metric.distance(p0, p2);
       double d12 = metric.distance(p1, p2);
@@ -137,12 +147,16 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
         case 0:
           dist[0] = d01;
           dist[1] = d02;
+          break;
         case 1:
           dist[0] = d01;
           dist[1] = d12;
+          break;
         case 2:
           dist[0] = d02;
           dist[1] = d12;
+          break;
+        default:
       }
 
       T vantagePoint = points.get(bestIndex);
@@ -212,15 +226,17 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
 
       for (int i = 0; i < sampleSize; i++) {
         T candidate = points.get(i);
-        int start = i * sampleSize, end = (i + 1) * sampleSize;
+        int start = i * sampleSize;
+        int end = (i + 1) * sampleSize;
 
-        range(start, end).parallel()
+        range(start, end)
+          .parallel()
           .forEach(j -> dist[j] = metric.distance(rest.get(j), candidate));
 
         double mean = Arrays.stream(dist, start, end).average().getAsDouble();
         // spread = mean absolute deviation.
         double spread = Arrays.stream(dist, start, end)
-          .map(d -> abs(d - mean)).average().getAsDouble();
+                              .map(d -> abs(d - mean)).average().getAsDouble();
 
         if (spread > bestSpread) {
           bestIndex = i;
@@ -275,7 +291,8 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
 
     final T center;
     final double radius;
-    final Node<T> inside, outside;
+    final Node<T> inside;
+    final Node<T> outside;
 
     Node(T point, double radius, Node<T> inside, Node<T> outside) {
       center = point;
@@ -302,7 +319,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
   public VPTree(Metric<T> metric, Iterable<T> points, SplittableRandom rnd) {
     this.metric = metric;
     root = ForkJoinPool.commonPool()
-      .invoke(new ConstructTask(rnd, Lists.newArrayList(points)));
+                       .invoke(new ConstructTask(rnd, Lists.newArrayList(points)));
   }
 
   public Metric<T> getMetric() {
@@ -320,11 +337,12 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
 
   /**
    * Finds the k nearest neighbors of the given point.
+   * <p>
+   * Returns a stream of entries containing neighbor points and their distance
+   * from the query point.
    *
    * @param k     Number of neighbors to collect.
    * @param point Query point.
-   * @return A stream of entries containing neighbor points and their distance
-   * from the query point.
    */
   public final Stream<Entry<T>> nearestNeighbors(int k, T point) {
     return nearestNeighbors(k, Double.POSITIVE_INFINITY, point);
@@ -333,12 +351,13 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
   /**
    * Finds the k nearest neighbors of the given point, restricted to a search
    * radius.
+   * <p>
+   * Returns a stream of entries containing neighbor points and their distance
+   * from the query point.
    *
    * @param k      Number of neighbors to collect.
    * @param radius Neighbors must be at distance <= radius from the query point.
    * @param point  Query point.
-   * @return A stream of entries containing neighbor points and their distance
-   * from the query point.
    */
   public final Stream<Entry<T>> nearestNeighbors(int k, double radius, T point) {
     // Max priority queue sorted on distance from query point.
@@ -381,11 +400,12 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
 
   /**
    * Finds all points within the given radius of the given point.
+   * <p>
+   * Returns a stream of entries containing neighbor points and their distance
+   * from the query point.
    *
    * @param radius Neighbors must be at distance <= radius from the query point.
    * @param point  Query point.
-   * @return A stream of entries containing neighbor points and their distance
-   * from the query point.
    */
   public Stream<Entry<T>> withinRadius(T point, double radius) {
     List<Entry<T>> result = new ArrayList<>();

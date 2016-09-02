@@ -36,7 +36,8 @@ class EditDistanceUtil {
 
   static int commonSuffix(CharSequence a, CharSequence b,
                           int start) {
-    int m = a.length() - start, n = b.length() - start;
+    int m = a.length() - start;
+    int n = b.length() - start;
     int min = Math.min(m, n);
     for (int i = 0; i < min; i++) {
       if (a.charAt(start + m - i - 1) != b.charAt(start + n - i - 1)) {

@@ -34,7 +34,9 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestSampling {
   @Test
@@ -51,29 +53,29 @@ public class TestSampling {
     assertArrayEquals(new int[]{0, 1, 2, 3}, sample);
     assertEquals(4, nCalls.get());
 
-    final int POPULATION_SIZE = 100;
-    final int ROUNDS = 9999;
-    final int SAMPLE_SIZE = 28;
+    final int populationSize = 100;
+    final int rounds = 9999;
+    final int sampleSize = 28;
 
-    int[] distribution = new int[POPULATION_SIZE];
+    int[] distribution = new int[populationSize];
 
-    for (int seed = 0; seed < ROUNDS; seed++) {
-      sample = Sampling.withoutReplacement(POPULATION_SIZE, SAMPLE_SIZE, new Random(seed));
+    for (int seed = 0; seed < rounds; seed++) {
+      sample = Sampling.withoutReplacement(populationSize, sampleSize, new Random(seed));
 
-      assertEquals(sample.length, SAMPLE_SIZE);
-      assertEquals(SAMPLE_SIZE,
+      assertEquals(sample.length, sampleSize);
+      assertEquals(sampleSize,
         stream(sample).boxed().collect(Collectors.toSet()).size());
 
       stream(sample).forEach(x -> {
         assertTrue(x >= 0);
-        assertTrue(x < POPULATION_SIZE);
+        assertTrue(x < populationSize);
         distribution[x]++;
       });
     }
 
     // Check that the distribution that we get is close enough to uniform.
     DoubleSummaryStatistics stats = stream(distribution)
-      .mapToDouble(x -> (x / (float) (ROUNDS * SAMPLE_SIZE))).summaryStatistics();
+      .mapToDouble(x -> (x / (float) (rounds * sampleSize))).summaryStatistics();
     assertTrue(stats.getMax() < 1.03 * stats.getAverage());
     assertTrue(stats.getMin() > 0.97 * stats.getAverage());
   }
@@ -87,7 +89,7 @@ public class TestSampling {
 
       Object[] fromIntegers = Arrays.stream(
         Sampling.withoutReplacement(strings.size(), 3, new Random(seed)))
-        .mapToObj(strings::get).toArray();
+                                    .mapToObj(strings::get).toArray();
 
       Object[] fromIterator = newArrayList(
         Sampling.withoutReplacement(strings, 3, new Random(seed)))

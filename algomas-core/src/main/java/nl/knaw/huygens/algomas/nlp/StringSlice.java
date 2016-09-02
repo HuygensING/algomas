@@ -31,8 +31,9 @@ package nl.knaw.huygens.algomas.nlp;
  * TODO: make this public?
  */
 final class StringSlice implements CharSequence {
-  private final String s;
-  private final int offset, len;
+  private final String str;
+  private final int offset;
+  private final int len;
 
   StringSlice(String s, int from, int to) {
     this(from, to, s);
@@ -40,15 +41,15 @@ final class StringSlice implements CharSequence {
   }
 
   // No-check constructors. Arguments swapped to change the signature.
-  private StringSlice(int from, int to, String s) {
-    this.s = s;
+  private StringSlice(int from, int to, String str) {
+    this.str = str;
     offset = from;
     len = to - from;
   }
 
   @Override
   public final char charAt(int index) {
-    return s.charAt(offset + index);
+    return str.charAt(offset + index);
   }
 
   private static void check(int from, int to, CharSequence s) {
@@ -65,10 +66,10 @@ final class StringSlice implements CharSequence {
   @Override
   public final CharSequence subSequence(int from, int to) {
     check(from, to, this);
-    return new StringSlice(offset + from, offset + to, s);
+    return new StringSlice(offset + from, offset + to, str);
   }
 
   public final String toString() {
-    return s.substring(offset, offset + len);
+    return str.substring(offset, offset + len);
   }
 }

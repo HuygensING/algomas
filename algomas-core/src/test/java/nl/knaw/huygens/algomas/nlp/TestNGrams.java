@@ -28,17 +28,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestNGrams {
   @Test
   public void simpleChars() {
     Object[] unigrams = NGrams.ofChars(1, "hello")
-      .map(CharSequence::toString).toArray();
+                              .map(CharSequence::toString).toArray();
     assertArrayEquals(new Object[]{"h", "e", "l", "l", "o"}, unigrams);
 
     Object[] bigrams = NGrams.ofChars(2, "HALLO")
-      .map(CharSequence::toString).toArray();
+                             .map(CharSequence::toString).toArray();
     assertArrayEquals(new Object[]{"HA", "AL", "LL", "LO"}, bigrams);
 
     String msg = "héllo, wörld";
@@ -63,8 +65,8 @@ public class TestNGrams {
       asList("hello", "n-gram"), asList("hello", "n-gram", "world"), asList("n-gram", "world")),
       ngrams);
 
-    List<List<String>> ngrams2_4 = ngramList(2, 4, "hello", "n-gram", "world");
-    assertEquals(ngrams, ngrams2_4);
+    List<List<String>> ngrams2to4 = ngramList(2, 4, "hello", "n-gram", "world");
+    assertEquals(ngrams, ngrams2to4);
 
     ngrams = ngramList(4, 5, "hello");
     assertEquals(0, ngrams.size());

@@ -27,14 +27,26 @@ import nl.knaw.huygens.algomas.nlp.LevenshteinDamerau;
 import org.junit.Test;
 
 import java.awt.geom.Point2D;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.SplittableRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestVPTree {
   private static final int[] SEEDS = {1, 17, 19, 24};
@@ -55,8 +67,8 @@ public class TestVPTree {
   static {
     words.addAll(QUERY_WORDS);
     QUERY_WORDS.stream()
-      .flatMap(x -> QUERY_WORDS.stream().map(y -> x + " -- " + y))
-      .forEachOrdered(words::add);
+               .flatMap(x -> QUERY_WORDS.stream().map(y -> x + " -- " + y))
+               .forEachOrdered(words::add);
     words.addAll(asList("foo", "bar", "baz", "quux"));
   }
 
@@ -133,7 +145,7 @@ public class TestVPTree {
     Random rnd = new Random(0xb000);
     List<Point2D> points = Stream.generate(() ->
       new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian()))
-      .limit(100).collect(Collectors.toList());
+                                 .limit(100).collect(Collectors.toList());
     VPTree<Point2D> tree = new VPTree<>(
       (Metric<Point2D> & Serializable) Point2D::distance, points);
 
@@ -151,12 +163,12 @@ public class TestVPTree {
     Random rnd = new Random(0xfeefee);
     List<Point2D> points = Stream.generate(() ->
       new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian()))
-      .limit(1000).collect(Collectors.toList());
+                                 .limit(1000).collect(Collectors.toList());
     VPTree<Point2D> tree = new VPTree<Point2D>(Point2D::distance, points);
 
     Point2D query = new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian());
     Set<Point2D> near = tree.withinRadius(query, .3)
-      .map(e -> e.point).collect(Collectors.toSet());
+                            .map(e -> e.point).collect(Collectors.toSet());
 
     points.stream().forEach(p ->
       assertTrue(near.contains(p) != p.distance(query) > .3));

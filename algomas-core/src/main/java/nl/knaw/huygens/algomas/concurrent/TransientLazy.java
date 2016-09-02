@@ -37,7 +37,9 @@ import java.util.function.Supplier;
  * If you are going to serialize a TransientLazy constructed from a lambda, don't
  * forget to make it serializable by casting to an intersection type:
  * <pre>
- *     TransientLazy((Supplier<String> & Serializable) () -> readBigFile(path))
+ * {@code
+ * TransientLazy((Supplier<String> & Serializable) () -> readBigFile(path))
+ * }
  * </pre>
  */
 public class TransientLazy<T> implements Serializable, Supplier<T> {

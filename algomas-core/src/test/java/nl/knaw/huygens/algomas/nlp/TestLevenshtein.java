@@ -28,28 +28,29 @@ import static org.junit.Assert.assertEquals;
 
 public class TestLevenshtein {
   private static class Case {
-    final String a, b;
+    final String strA;
+    final String strB;
     final int expected;
 
     Case(String s, String t, int d) {
-      a = s;
-      b = t;
+      strA = s;
+      strB = t;
       expected = d;
     }
 
     void testDistance() {
-      int d = Levenshtein.distance(a, b);
-      assertEquals(a + " " + b, expected, d);
-      d = Levenshtein.distance(b, a);
-      assertEquals(a + " " + b, expected, d);
+      int dist = Levenshtein.distance(strA, strB);
+      assertEquals(strA + " " + strB, expected, dist);
+      dist = Levenshtein.distance(strB, strA);
+      assertEquals(strA + " " + strB, expected, dist);
     }
 
     void testBounded(int max) {
-      int d = Levenshtein.boundedDistance(a, b, max);
+      int d = Levenshtein.boundedDistance(strA, strB, max);
       if (expected <= max) {
-        assertEquals(a + " " + b, expected, d);
+        assertEquals(strA + " " + strB, expected, d);
       } else {
-        assertEquals(a + " " + b, max, d);
+        assertEquals(strA + " " + strB, max, d);
       }
     }
   }

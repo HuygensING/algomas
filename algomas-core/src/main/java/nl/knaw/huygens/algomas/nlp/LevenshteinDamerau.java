@@ -111,8 +111,8 @@ public class LevenshteinDamerau {
           d.get(i - 1, j - 1) + substCost,
           d.get(i, j - 1) + INDEL,
           d.get(i - 1, j) + INDEL,
-          d.get(i1 - 1, j1 - 1) + (i - i1 - 1) * INDEL
-            + TRANSP + (j - j1 - 1) * INDEL));
+          d.get(i1 - 1, j1 - 1) + (i - i1 - 1) * INDEL +
+            TRANSP + (j - j1 - 1) * INDEL));
       }
       da[xi] = i;
     }
