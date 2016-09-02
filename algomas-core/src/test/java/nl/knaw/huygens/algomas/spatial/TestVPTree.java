@@ -164,14 +164,18 @@ public class TestVPTree {
     List<Point2D> points = Stream.generate(() ->
       new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian()))
                                  .limit(1000).collect(Collectors.toList());
-    VPTree<Point2D> tree = new VPTree<Point2D>(Point2D::distance, points);
+    VPTree<Point2D> tree = new VPTree<>(Point2D::distance, points,
+      new SplittableRandom(1));
 
     Point2D query = new Point2D.Double(rnd.nextGaussian(), rnd.nextGaussian());
-    Set<Point2D> near = tree.withinRadius(query, .3)
-                            .map(e -> e.point).collect(Collectors.toSet());
+    List<VPTree.Entry<Point2D>> result = tree.withinRadius(query, .3)
+                                             .collect(Collectors.toList());
+    Set<Point2D> nearbyPoints = result.stream().map(e -> e.point)
+                                      .collect(Collectors.toSet());
 
-    points.stream().forEach(p ->
-      assertTrue(near.contains(p) != p.distance(query) > .3));
+    result.stream().forEach(entry -> {
+      assertTrue(nearbyPoints.contains(entry.point) != entry.point.distance(query) > .3);
+    });
   }
 
   @Test
