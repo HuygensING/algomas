@@ -22,8 +22,6 @@ package nl.knaw.huygens.algomas.spatial;
  * #L%
  */
 
-import com.google.common.collect.Lists;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +32,9 @@ import java.util.PriorityQueue;
 import java.util.SplittableRandom;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
@@ -317,9 +317,16 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * @param rnd    Random number generator.
    */
   public VPTree(Metric<T> metric, Iterable<T> points, SplittableRandom rnd) {
+    // this.metric = metric;
+    // root = ForkJoinPool.commonPool()
+    //                    .invoke(new ConstructTask(rnd, Lists.newArrayList(points)));
+    this(metric, StreamSupport.stream(points.spliterator(), false), rnd);
+  }
+
+  public VPTree(Metric<T> metric, Stream<T> points, SplittableRandom rnd) {
     this.metric = metric;
     root = ForkJoinPool.commonPool()
-                       .invoke(new ConstructTask(rnd, Lists.newArrayList(points)));
+                       .invoke(new ConstructTask(rnd, points.collect(Collectors.toList())));
   }
 
   public Metric<T> getMetric() {
