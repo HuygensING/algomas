@@ -51,7 +51,7 @@ import static java.util.stream.IntStream.range;
  *
  * @param <T> The type of points.
  */
-public final class VPTree<T> implements Iterable<T>, Serializable {
+public final class VPTree<T> implements Iterable<T>, Serializable, SpatialIndex<T> {
   private static final long serialVersionUID = 1L;
 
   // Construction algorithm.
@@ -264,28 +264,6 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
     }
   }
 
-  /**
-   * Represents one result from a neighborhood query.
-   * <p>
-   * An {@code Entry} instance packages a point and its distance from a query point.
-   * The instance does not record the query point itself.
-   */
-  public static final class Entry<T> implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    public final double distance;
-    public final T point;
-
-    Entry(T point, double distance) {
-      this.distance = distance;
-      this.point = point;
-    }
-
-    public String toString() {
-      return String.format("%s at distance %g", point, distance);
-    }
-  }
-
   private static final class Node<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -351,6 +329,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * @param k     Number of neighbors to collect.
    * @param point Query point.
    */
+  @Override
   public final Stream<Entry<T>> nearestNeighbors(int k, T point) {
     return nearestNeighbors(k, Double.POSITIVE_INFINITY, point);
   }
@@ -366,6 +345,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * @param radius Neighbors must be at distance <= radius from the query point.
    * @param point  Query point.
    */
+  @Override
   public final Stream<Entry<T>> nearestNeighbors(int k, double radius, T point) {
     // Max priority queue sorted on distance from query point.
     Comparator<Entry<T>> byDistance = comparing(e -> e.distance);
@@ -414,6 +394,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * @param radius Neighbors must be at distance <= radius from the query point.
    * @param point  Query point.
    */
+  @Override
   public Stream<Entry<T>> withinRadius(T point, double radius) {
     List<Entry<T>> result = new ArrayList<>();
     withinRadius(root, point, radius, result);
