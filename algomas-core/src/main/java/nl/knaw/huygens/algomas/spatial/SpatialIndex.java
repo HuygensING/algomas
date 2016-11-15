@@ -10,6 +10,8 @@ public interface SpatialIndex<T> {
 
   Stream<Entry<T>> withinRadius(T point, double radius);
 
+  Stream<T> stream();
+
   int size();
 
   /**

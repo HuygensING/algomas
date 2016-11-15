@@ -34,7 +34,7 @@ public class TestDbscan {
 
   @Test
   public void testDbscan() {
-    Dbscan<String> clustering = new Dbscan<>(allPoints, new VPTree<>(Levenshtein::distance, allPoints), 5, 3);
+    Dbscan<String> clustering = new Dbscan<>(new VPTree<>(Levenshtein::distance, allPoints), 5, 3);
 
     assertEquals(2, clustering.numClusters());
 

@@ -438,6 +438,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable, SpatialIndex<
   /**
    * A stream containing all points within the tree.
    */
+  @Override
   public Stream<T> stream() {
     return stream(root).unordered();
   }

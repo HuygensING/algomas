@@ -22,15 +22,15 @@ public class Dbscan<T> {
   private final int minPoints;
   private final double radius;
 
-  public Dbscan(Iterable<T> points, SpatialIndex<T> index, double radius, int minPoints) {
+  public Dbscan(SpatialIndex<T> index, double radius, int minPoints) {
     this.minPoints = minPoints;
     this.radius = radius;
 
     Set<T> visited = new HashSet<>();
 
-    for (T point : points) {
+    index.stream().forEach((T point) -> {
       if (visited.contains(point)) {
-        continue;
+        return;
       }
       visited.add(point);
 
@@ -40,7 +40,7 @@ public class Dbscan<T> {
       } else {
         expand(index, point, neighborhood, clusterIndex, nclusters++, visited);
       }
-    }
+    });
   }
 
   private void expand(SpatialIndex<T> index, T point, Deque<T> neighborhood, Map<T, Integer> clusterIndex,
