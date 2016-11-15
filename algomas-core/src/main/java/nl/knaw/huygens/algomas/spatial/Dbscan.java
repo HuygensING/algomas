@@ -12,17 +12,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Density-based spatial clustering of applications with noise (DBSCAN).
+ * Density-based spatial clustering of applications with noise (Dbscan).
  *
  * @param <T> Type of points to be clustered.
  */
-public class DBSCAN<T> {
+public class Dbscan<T> {
   private int nclusters = 0;
   private final Map<T, Integer> clusterIndex = new HashMap<>();
   private final int minPoints;
   private final double radius;
 
-  public DBSCAN(Iterable<T> points, SpatialIndex<T> index, double radius, int minPoints) {
+  public Dbscan(Iterable<T> points, SpatialIndex<T> index, double radius, int minPoints) {
     this.minPoints = minPoints;
     this.radius = radius;
 
@@ -72,7 +72,7 @@ public class DBSCAN<T> {
    * Mapping of points to cluster indices.
    *
    * @return A Map that maps each point in the input to an integer label < numClusters().
-   * Noise points have the label -1. The caller is not supposed to modify this map.
+   *         Noise points have the label -1. The caller is not supposed to modify this map.
    */
   public Map<T, Integer> clusterLabels() {
     return Collections.unmodifiableMap(clusterIndex);

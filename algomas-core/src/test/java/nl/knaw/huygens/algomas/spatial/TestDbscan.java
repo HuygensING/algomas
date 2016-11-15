@@ -13,7 +13,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TestDBSCAN {
+public class TestDbscan {
   private static final Set<String> list0 = ImmutableSet.of(
     "keizerlijk", "keyserlijck", "keyserlyck", "kaiserlich"
   );
@@ -33,8 +33,8 @@ public class TestDBSCAN {
   }
 
   @Test
-  public void testDBSCAN() {
-    DBSCAN<String> clustering = new DBSCAN<>(allPoints, new VPTree<>(Levenshtein::distance, allPoints), 5, 3);
+  public void testDbscan() {
+    Dbscan<String> clustering = new Dbscan<>(allPoints, new VPTree<>(Levenshtein::distance, allPoints), 5, 3);
 
     assertEquals(2, clustering.numClusters());
 
@@ -43,7 +43,6 @@ public class TestDBSCAN {
     Collection<String> noise = new HashSet<>();
 
     clustering.clusterLabels().forEach((point, index) -> {
-      assertTrue(index >= -1 && index <= 1);
       switch (index) {
         case 0:
           cluster0.add(point);
@@ -54,9 +53,11 @@ public class TestDBSCAN {
         case -1:
           noise.add(point);
           break;
+        default:
+          assertTrue(index >= -1 && index <= 1);
       }
     });
-    assertTrue(cluster0.equals(list0) && cluster1.equals(list1)
-      || cluster0.equals(list1) && cluster1.equals(list0));
+    assertTrue(cluster0.equals(list0) && cluster1.equals(list1) ||
+      cluster0.equals(list1) && cluster1.equals(list0));
   }
 }
