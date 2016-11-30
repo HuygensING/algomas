@@ -17,12 +17,13 @@ public class TestLevenshtein {
     List<Integer> b = asList(2, 3, 4, 6, 7);
 
     assertEquals(7, lev.distance(a, b));
+    assertEquals(7, lev.distance(b, a));
 
     // LCS distance.
     lev = new Levenshtein<>(1, Integer.MAX_VALUE);
     a = asList(1, 2, 4, 5, 6, 7);
     b = asList(2, 3, 4, 5, 6, 8, 9);
-    assertEquals(5, lev.distance(a, b));
+    assertEquals(5, lev.distance(b, a));
   }
 
   @Test
