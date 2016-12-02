@@ -47,6 +47,11 @@ questions.
 
   <dependencies>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>19.0</version>
+    </dependency>
+    <dependency>
       <groupId>nl.knaw.huygens.algomas</groupId>
       <artifactId>algomas-core</artifactId>
       <version>1.8.0-SNAPSHOT</version>

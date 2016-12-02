@@ -22,6 +22,8 @@ package nl.knaw.huygens.algomas;
  * #L%
  */
 
+import com.google.common.primitives.Chars;
+import nl.knaw.huygens.algomas.editdist.AbstractLevenshtein;
 import nl.knaw.huygens.algomas.nlp.Levenshtein;
 import nl.knaw.huygens.algomas.nlp.LevenshteinDamerau;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,10 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Warmup;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Warmup(iterations = 3)
 @Measurement(iterations = 5)
@@ -48,11 +54,30 @@ public class EditDistanceBenchmark {
     "floating point",
   };
 
+  private static final List<List<Character>> lists =
+    Arrays.asList(words).stream()
+          .map(w -> Chars.asList(w.toCharArray()))
+          .collect(Collectors.toList());
+
+  private interface ListMetric {
+    int distance(List<Character> a, List<Character> b);
+  }
+
+  private static double pairwiseLists(ListMetric metric) {
+    double total = 0;
+    for (int i = 0; i < lists.size(); i++) {
+      for (int j = i; j < lists.size(); j++) {
+        total += metric.distance(lists.get(i), lists.get(j));
+      }
+    }
+    return total;
+  }
+
   private interface StringMetric {
     int distance(String a, String b);
   }
 
-  private static double pairwiseTotal(StringMetric metric) {
+  private static double pairwiseStrings(StringMetric metric) {
     double total = 0;
     for (int i = 0; i < words.length; i++) {
       for (int j = i; j < words.length; j++) {
@@ -63,18 +88,40 @@ public class EditDistanceBenchmark {
   }
 
   @Benchmark
+  public double abstractLevenshtein() {
+    AbstractLevenshtein<Character> levenshtein = new AbstractLevenshtein<Character>() {
+      @Override
+      protected int indelCost(Character x) {
+        return 1;
+      }
+
+      @Override
+      protected int substCost(Character x, Character y) {
+        return 1;
+      }
+    };
+
+    return pairwiseLists(levenshtein::distance);
+  }
+
+  @Benchmark
   public double bounded3() {
-    return pairwiseTotal((a, b) -> Levenshtein.boundedDistance(a, b, 3));
+    return pairwiseStrings((a, b) -> Levenshtein.boundedDistance(a, b, 3));
+  }
+
+  @Benchmark
+  public double genericLevenshtein() {
+    return pairwiseLists(new nl.knaw.huygens.algomas.editdist.Levenshtein()::distance);
   }
 
   @Benchmark
   public double levenshtein() {
-    return pairwiseTotal(Levenshtein::distance);
+    return pairwiseStrings(Levenshtein::distance);
   }
 
   @Benchmark
   public double levenshteinDamerau() {
-    return pairwiseTotal(LevenshteinDamerau::distance);
+    return pairwiseStrings(LevenshteinDamerau::distance);
   }
 
   // As of Apache Commons-Lang 3.4, their Levenshtein implementation
@@ -83,12 +130,12 @@ public class EditDistanceBenchmark {
   // the DP matrix (they store two).
   @Benchmark
   public double commons() {
-    return pairwiseTotal(StringUtils::getLevenshteinDistance);
+    return pairwiseStrings(StringUtils::getLevenshteinDistance);
   }
 
   @Benchmark
   public double commonsBounded3() {
-    return pairwiseTotal((a, b) -> {
+    return pairwiseStrings((a, b) -> {
       int d = StringUtils.getLevenshteinDistance(a, b, 3);
       if (d == -1) {
         d = 4;
