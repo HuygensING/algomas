@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class TestLevenshtein {
   @Test
   public void smokeTest() {
-    Levenshtein<Integer> lev = new Levenshtein<>(2, 3);
+    GenericLevenshtein<Integer> lev = new GenericLevenshtein<>(2, 3);
 
     List<Integer> a = asList(1, 2, 3, 5, 6);
     List<Integer> b = asList(2, 3, 4, 6, 7);
@@ -20,7 +20,7 @@ public class TestLevenshtein {
     assertEquals(7, lev.distance(b, a));
 
     // LCS distance.
-    lev = new Levenshtein<>(1, Integer.MAX_VALUE);
+    lev = new GenericLevenshtein<>(1, Integer.MAX_VALUE);
     a = asList(1, 2, 4, 5, 6, 7);
     b = asList(2, 3, 4, 5, 6, 8, 9);
     assertEquals(5, lev.distance(b, a));

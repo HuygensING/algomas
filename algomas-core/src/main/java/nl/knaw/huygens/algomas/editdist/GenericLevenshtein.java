@@ -7,15 +7,15 @@ package nl.knaw.huygens.algomas.editdist;
  * instances of this class are parameterized on the input type and on
  * atomic edit operation costs.
  */
-public class Levenshtein<T> extends AbstractLevenshtein<T> {
+public class GenericLevenshtein<T> extends AbstractLevenshtein<T> {
   private final int indelCost;
   private final int substCost;
 
-  public Levenshtein() {
+  public GenericLevenshtein() {
     this(1, 1);
   }
 
-  public Levenshtein(int indelCost, int substCost) {
+  public GenericLevenshtein(int indelCost, int substCost) {
     this.indelCost = indelCost;
     this.substCost = substCost;
   }

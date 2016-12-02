@@ -24,6 +24,7 @@ package nl.knaw.huygens.algomas;
 
 import com.google.common.primitives.Chars;
 import nl.knaw.huygens.algomas.editdist.AbstractLevenshtein;
+import nl.knaw.huygens.algomas.editdist.GenericLevenshtein;
 import nl.knaw.huygens.algomas.nlp.Levenshtein;
 import nl.knaw.huygens.algomas.nlp.LevenshteinDamerau;
 import org.apache.commons.lang3.StringUtils;
@@ -111,7 +112,7 @@ public class EditDistanceBenchmark {
 
   @Benchmark
   public double genericLevenshtein() {
-    return pairwiseLists(new nl.knaw.huygens.algomas.editdist.Levenshtein()::distance);
+    return pairwiseLists(new GenericLevenshtein()::distance);
   }
 
   @Benchmark
