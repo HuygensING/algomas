@@ -43,7 +43,8 @@ public class TestLevenshtein {
 
       @Override
       protected int substCost(Character x, Character y) {
-        char cx = x, cy = y;
+        char cx = x;
+        char cy = y;
         return cx == cy ? 0 : Integer.MAX_VALUE;
       }
     };
