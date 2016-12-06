@@ -317,9 +317,6 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * @param rnd    Random number generator.
    */
   public VPTree(Metric<T> metric, Iterable<T> points, SplittableRandom rnd) {
-    // this.metric = metric;
-    // root = ForkJoinPool.commonPool()
-    //                    .invoke(new ConstructTask(rnd, Lists.newArrayList(points)));
     this(metric, StreamSupport.stream(points.spliterator(), false), rnd);
   }
 
