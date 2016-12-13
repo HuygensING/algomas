@@ -25,15 +25,18 @@ package nl.knaw.huygens.algomas.spatial;
 import nl.knaw.huygens.algomas.stat.RandomGen;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Spliterator;
 import java.util.SplittableRandom;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -332,6 +335,63 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
     return stream().iterator();
   }
 
+  private static class SpliteratorImpl<T> implements Spliterator<T> {
+    ArrayDeque<Node<T>> nodes;
+    private int size;
+
+    private SpliteratorImpl(Node<T> node, int size) {
+      nodes = new ArrayDeque<>();
+      nodes.addLast(node);
+      this.size = (node.inside == null && node.outside == null) ? 1 : size;
+    }
+
+    @Override
+    public boolean tryAdvance(Consumer<? super T> action) {
+      if (nodes.isEmpty()) {
+        return false;
+      }
+      Node<T> top = nodes.removeFirst();
+      action.accept(top.center);
+      push(top.inside);
+      push(top.outside);
+      size--;
+      return true;
+    }
+
+    private final void push(Node<T> node) {
+      if (node != null) {
+        nodes.addLast(node);
+      }
+    }
+
+    @Override
+    public Spliterator<T> trySplit() {
+      if (nodes.size() < 2) {
+        return null;
+      }
+      // Pretend half the elements are in the first node on the queue.
+      // XXX will this be called after it returns false the first time?
+      Spliterator<T> left = new SpliteratorImpl<>(nodes.removeFirst(), size / 2);
+      size -= size / 2;
+      return left;
+    }
+
+    @Override
+    public long estimateSize() {
+      return size;
+    }
+
+    @Override
+    public int characteristics() {
+      return SIZED;
+    }
+  }
+
+  @Override
+  public Spliterator<T> spliterator() {
+    return new SpliteratorImpl<T>(root, size());
+  }
+
   /**
    * Finds the k nearest neighbors of the given point.
    * <p>
@@ -448,7 +508,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * A stream containing all points within the tree.
    */
   public Stream<T> stream() {
-    return stream(root).unordered();
+    return StreamSupport.stream(spliterator(), false);
   }
 
   private static <T> Stream<T> stream(Node<T> n) {

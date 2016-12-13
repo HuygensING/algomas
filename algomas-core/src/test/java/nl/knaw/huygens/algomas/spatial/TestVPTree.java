@@ -185,4 +185,11 @@ public class TestVPTree {
     assertArrayEquals(new double[]{},
       tree.nearestNeighbors(100, Math.PI).mapToDouble(e -> e.distance).toArray(), 0);
   }
+
+  @Test
+  public void stream() {
+    VPTree<String> tree = new VPTree<>((a, b) -> Math.abs(a.charAt(0) - b.charAt(0)), words);
+    assertEquals(new HashSet<>(words), tree.stream().collect(Collectors.toSet()));
+    assertEquals(new HashSet<>(words), tree.stream().parallel().collect(Collectors.toSet()));
+  }
 }

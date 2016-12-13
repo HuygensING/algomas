@@ -70,7 +70,7 @@ public class VPTreeBenchmark {
 
   static {
     Random rnd = new Random(0x4aee62);
-    WORDS.stream().flatMap(w -> corrupt(w, rnd, 10))
+    WORDS.stream().flatMap(w -> corrupt(w, rnd, 100))
          .forEach(TO_INDEX::add);
     WORDS.stream().flatMap(w -> corrupt(w, rnd, 3))
          .forEach(QUERIES::add);
@@ -105,5 +105,19 @@ public class VPTreeBenchmark {
         return distances.subList(0, 3).stream().mapToDouble(x -> (double) x);
       })
       .average().getAsDouble();
+  }
+
+  @Benchmark
+  public static int iterator() {
+    int n = 0;
+    for (String ignored : tree) {
+      n++;
+    }
+    return n;
+  }
+
+  @Benchmark
+  public static long stream() {
+    return tree.stream().mapToLong(String::length).sum();
   }
 }
