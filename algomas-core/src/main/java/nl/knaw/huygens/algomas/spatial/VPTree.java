@@ -22,6 +22,8 @@ package nl.knaw.huygens.algomas.spatial;
  * #L%
  */
 
+import nl.knaw.huygens.algomas.stat.RandomGen;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -216,7 +218,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
       // as the sample size ensures that we make a linear number of
       // distance comparisons.
       int sampleSize = (int) sqrt(points.size());
-      shuffle();
+      RandomGen.shuffle(points, rnd::nextInt);
       List<T> rest = points.subList(sampleSize, points.size());
 
       int bestIndex = -1;
@@ -248,15 +250,6 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
       points.set(bestIndex, points.get(points.size() - 1));
       points = points.subList(0, points.size() - 1);
       return vantagePoint;
-    }
-
-    // Simple Fisher-Yates shuffle, reimplemented because
-    // Collections.shuffle doesn't take SplittableRandom.
-    private void shuffle() {
-      for (int i = points.size(); --i > 0; ) {
-        int r = rnd.nextInt(i + 1);
-        points.set(i, points.set(r, points.get(i)));
-      }
     }
 
     private Node<T> singleton(T point) {
