@@ -59,25 +59,21 @@ public class VPTreeBenchmark {
   // List of words to be indexed in VP-tree, filled below.
   private static final List<String> TO_INDEX = new ArrayList<>();
 
-  private static char randomLetter(Random rnd) {
-    return "abcdefghijklmnopqrstuvwxyz".charAt(rnd.nextInt(26));
-  }
-
   // Return n randomly corrupted variants of s.
   private static Stream<String> corrupt(String s, Random rnd, int n) {
     return rnd.ints(n, 0, s.length())
-      .mapToObj(i -> {
-        char letter = "abcdefghijklmnopqrstuvwxyz".charAt(rnd.nextInt(26));
-        return s.substring(0, i) + letter + s.substring(i);
-      });
+              .mapToObj(i -> {
+                char letter = "abcdefghijklmnopqrstuvwxyz".charAt(rnd.nextInt(26));
+                return s.substring(0, i) + letter + s.substring(i);
+              });
   }
 
   static {
     Random rnd = new Random(0x4aee62);
     WORDS.stream().flatMap(w -> corrupt(w, rnd, 10))
-      .forEach(TO_INDEX::add);
+         .forEach(TO_INDEX::add);
     WORDS.stream().flatMap(w -> corrupt(w, rnd, 3))
-      .forEach(QUERIES::add);
+         .forEach(QUERIES::add);
   }
 
   private static final VPTree<String> makeTree() {
@@ -95,20 +91,19 @@ public class VPTreeBenchmark {
   public static double neighbors3() {
     return QUERIES.stream().flatMapToDouble(q ->
       tree.nearestNeighbors(3, q).mapToDouble(e -> e.distance))
-      .average().getAsDouble();
+                  .average().getAsDouble();
   }
 
   @Benchmark
   public static double neighbors3Brute() {
-    return QUERIES.stream().flatMapToDouble(q -> {
-      List<Integer> distances = TO_INDEX.stream().map(w -> Levenshtein.distance(w, q))
-        .collect(Collectors.toList());
-      Sort.partial(distances, 3);
-      return distances.subList(0, 3).stream().mapToDouble(x -> (double) x);
-    })
+    return QUERIES
+      .stream()
+      .flatMapToDouble(q -> {
+        List<Integer> distances = TO_INDEX.stream().map(w -> Levenshtein.distance(w, q))
+                                          .collect(Collectors.toList());
+        Sort.partial(distances, 3);
+        return distances.subList(0, 3).stream().mapToDouble(x -> (double) x);
+      })
       .average().getAsDouble();
-
-//      TO_INDEX.stream().mapToDouble(w -> Levenshtein.distance(w, q)))
-//      .average().getAsDouble();
   }
 }
