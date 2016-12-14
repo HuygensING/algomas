@@ -24,7 +24,7 @@
 
   <groupId>nl.knaw.huygens.algomas</groupId>
   <artifactId>algomas</artifactId>
-  <version>1.9-SNAPSHOT</version>
+  <version>1.9.0</version>
 
   <build>
     <plugins>
