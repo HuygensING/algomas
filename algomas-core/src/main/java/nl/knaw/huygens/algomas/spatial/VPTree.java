@@ -510,13 +510,4 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
   public Stream<T> stream() {
     return StreamSupport.stream(spliterator(), false);
   }
-
-  private static <T> Stream<T> stream(Node<T> n) {
-    if (n == null) {
-      return Stream.empty();
-    }
-    return Stream.concat(
-      Stream.concat(Stream.of(n.center), stream(n.inside)),
-      stream(n.outside));
-  }
 }
