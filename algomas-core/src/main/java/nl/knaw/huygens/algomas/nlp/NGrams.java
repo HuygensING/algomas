@@ -43,7 +43,7 @@ public class NGrams {
     final int length = str.length();
     return range(0, length).boxed()
                            .flatMap(start -> range(minN, Math.min(maxN, length - start) + 1)
-                             .mapToObj(n -> new StringSlice(str, start, start + n)));
+                             .mapToObj(n -> new StringSlice(start, start + n, str)));
   }
 
   /**

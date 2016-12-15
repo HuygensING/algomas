@@ -40,8 +40,8 @@ final class StringSlice implements CharSequence {
     check(from, to, s);
   }
 
-  // No-check constructors. Arguments swapped to change the signature.
-  private StringSlice(int from, int to, String str) {
+  // No-check constructor. Arguments swapped to change the signature.
+  StringSlice(int from, int to, String str) {
     this.str = str;
     offset = from;
     len = to - from;
