@@ -23,6 +23,9 @@ package nl.knaw.huygens.algomas.nlp;
  */
 
 public class Levenshtein {
+  private Levenshtein() {
+  }
+
   /**
    * Returns min(Levenshtein.distance(a, b), maxDist).
    * <p>

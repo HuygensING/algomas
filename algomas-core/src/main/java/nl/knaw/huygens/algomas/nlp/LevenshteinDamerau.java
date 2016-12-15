@@ -23,6 +23,9 @@ package nl.knaw.huygens.algomas.nlp;
  */
 
 public class LevenshteinDamerau {
+  private LevenshteinDamerau() {
+  }
+
   private static class Matrix {
     final int[] entry;
     final int rowLength;

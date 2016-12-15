@@ -30,6 +30,9 @@ import java.util.List;
  * Sorting algorithms.
  */
 public class Sort {
+  private Sort() {
+  }
+
   /**
    * Partial sorting by natural order.
    */

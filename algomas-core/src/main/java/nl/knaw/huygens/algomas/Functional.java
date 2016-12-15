@@ -33,6 +33,9 @@ import java.util.function.Supplier;
  * Functional programming utilities.
  */
 public class Functional {
+  private Functional() {
+  }
+
   /**
    * Turn an Iterator into an Iterable.
    * <p>

@@ -27,6 +27,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class NGrams {
+  NGrams() {
+  }
+
   /**
    * Generate character n-grams of s, of lengths in the range [minN, maxN]
    *

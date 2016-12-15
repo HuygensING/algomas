@@ -23,6 +23,9 @@ package nl.knaw.huygens.algomas;
  */
 
 public class ExtMath {
+  private ExtMath() {
+  }
+
   /**
    * log(exp(x) + exp(y)), computed in a stable way.
    */
