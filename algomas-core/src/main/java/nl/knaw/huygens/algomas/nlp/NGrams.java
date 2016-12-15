@@ -23,8 +23,9 @@ package nl.knaw.huygens.algomas.nlp;
  */
 
 import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static java.util.stream.IntStream.range;
 
 public class NGrams {
   NGrams() {
@@ -40,9 +41,9 @@ public class NGrams {
 
     String str = s.toString();
     final int length = str.length();
-    return IntStream.range(0, length).boxed()
-      .flatMap(start -> IntStream.range(minN, Math.min(maxN, length - start) + 1)
-        .mapToObj(n -> new StringSlice(str, start, start + n)));
+    return range(0, length).boxed()
+                           .flatMap(start -> range(minN, Math.min(maxN, length - start) + 1)
+                             .mapToObj(n -> new StringSlice(str, start, start + n)));
   }
 
   /**
@@ -63,9 +64,9 @@ public class NGrams {
     boundsCheck(minN, maxN);
 
     final int size = list.size();
-    return IntStream.range(0, size).boxed()
-      .flatMap(start -> IntStream.range(minN, Math.min(maxN, size - start) + 1)
-        .mapToObj(n -> list.subList(start, start + n)));
+    return range(0, size).boxed()
+                         .flatMap(start -> range(minN, Math.min(maxN, size - start) + 1)
+                           .mapToObj(n -> list.subList(start, start + n)));
   }
 
   /**
