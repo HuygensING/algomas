@@ -72,7 +72,7 @@ public class Sampling {
    */
   public static <E> Iterator<E> withoutReplacement(Iterator<E> iterator, int size, int sampleSize,
                                                    IntUnaryOperator nextInt) {
-    return new IteratorWithoutReplacement<E>(iterator, size, sampleSize, nextInt);
+    return new IteratorWithoutReplacement<>(iterator, size, sampleSize, nextInt);
   }
 
   /**
