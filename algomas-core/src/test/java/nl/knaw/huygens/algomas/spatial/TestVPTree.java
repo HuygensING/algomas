@@ -189,6 +189,8 @@ public class TestVPTree {
   @Test
   public void stream() {
     VPTree<String> tree = new VPTree<>((a, b) -> Math.abs(a.charAt(0) - b.charAt(0)), words);
+    assertEquals(tree.size(), tree.spliterator().estimateSize());
+    assertEquals(tree.size(), tree.stream().count());
     assertEquals(new HashSet<>(words), tree.stream().collect(Collectors.toSet()));
     assertEquals(new HashSet<>(words), tree.stream().parallel().collect(Collectors.toSet()));
   }

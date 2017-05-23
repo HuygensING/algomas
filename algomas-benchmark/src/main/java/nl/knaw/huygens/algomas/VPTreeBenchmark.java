@@ -32,6 +32,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -116,8 +117,21 @@ public class VPTreeBenchmark {
     return n;
   }
 
+  private static ToDoubleFunction<String> function = s -> {
+    int vowels = 0;
+    s = s.toLowerCase();
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if ("aeiouy".indexOf(c) != -1) {
+        vowels++;
+      }
+    }
+    return vowels / (double) s.length();
+  };
+
   @Benchmark
-  public static long stream() {
-    return tree.stream().mapToLong(String::length).sum();
+  public static double stream() {
+    return tree.stream().parallel()
+               .mapToDouble(function).filter(Double::isFinite).sum();
   }
 }

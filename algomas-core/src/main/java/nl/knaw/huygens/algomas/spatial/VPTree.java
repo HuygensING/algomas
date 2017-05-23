@@ -336,11 +336,13 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
   }
 
   private static class SpliteratorImpl<T> implements Spliterator<T> {
-    ArrayDeque<Node<T>> nodes;
+    // Queue of nodes still to be traversed. Since we push higher nodes
+    // before lower ones, FIFO order should correspond roughly to ordering
+    // by size.
+    private ArrayDeque<Node<T>> nodes = new ArrayDeque<>();
     private int size;
 
     private SpliteratorImpl(Node<T> node, int size) {
-      nodes = new ArrayDeque<>();
       nodes.addLast(node);
       this.size = (node.inside == null && node.outside == null) ? 1 : size;
     }
@@ -358,7 +360,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
       return true;
     }
 
-    private final void push(Node<T> node) {
+    private void push(Node<T> node) {
       if (node != null) {
         nodes.addLast(node);
       }
@@ -366,11 +368,10 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
 
     @Override
     public Spliterator<T> trySplit() {
-      if (nodes.size() < 2) {
+      if (nodes.isEmpty()) {
         return null;
       }
-      // Pretend half the elements are in the first node on the queue.
-      // XXX will this be called after it returns false the first time?
+      // Assume that about half the elements are in the first node on the queue.
       Spliterator<T> left = new SpliteratorImpl<>(nodes.removeFirst(), size / 2);
       size -= size / 2;
       return left;
@@ -383,13 +384,13 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
 
     @Override
     public int characteristics() {
-      return SIZED;
+      return SIZED | SUBSIZED;
     }
   }
 
   @Override
   public Spliterator<T> spliterator() {
-    return new SpliteratorImpl<T>(root, size());
+    return new SpliteratorImpl<>(root, size());
   }
 
   /**
