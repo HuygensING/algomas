@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -64,6 +65,8 @@ public class TestLazy {
     singleThread(TransientLazy::new);
   }
 
+  private static final int NTHREADS = 100;
+
   private void multiThread(UnaryOperator<Supplier<Integer>> newLazy) {
     AtomicInteger nCalls = new AtomicInteger();
     Supplier<Integer> lazy = newLazy.apply(uncheck(() -> {
@@ -73,15 +76,16 @@ public class TestLazy {
       return i;
     }));
 
-    Thread thr1 = new Thread(lazy::get);
-    Thread thr2 = new Thread(lazy::get);
-
-    thr1.start();
-    thr2.start();
+    List<Thread> threads = new ArrayList<>();
+    for (int i = 0; i < NTHREADS; i++) {
+      threads.add(new Thread(lazy::get));
+    }
+    threads.forEach(Thread::start);
 
     try {
-      thr1.join();
-      thr2.join();
+      for (Thread thread : threads) {
+        thread.join();
+      }
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
