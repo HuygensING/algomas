@@ -4,7 +4,7 @@ package nl.knaw.huygens.algomas.nlp;
  * #%L
  * algomas-core
  * %%
- * Copyright (C) 2016 Huygens ING (KNAW)
+ * Copyright (C) 2016-2017 Huygens ING (KNAW)
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -33,6 +33,11 @@ public class NGrams {
 
   /**
    * Generate character n-grams of s, of lengths in the range [minN, maxN]
+   * <p>
+   * Calling {@link Stream#parallel} on this stream is safe, regardless of the type of input.
+   * <p>
+   * The resulting CharSequences are not comparable with equals and not hashable.
+   * To store them, convert them to String with {@link #toString()}.
    *
    * @return Returns a sequential stream of n-grams, represented as CharSequences.
    */
@@ -59,6 +64,9 @@ public class NGrams {
    * An n-gram is a sequence of consecutive items of a list, typically a list of tokens in a text.
    * <p>
    * The n-grams are ordered first by starting position in list, then by length.
+   * <p>
+   * Calling {@link Stream#parallel} on the result is safe if calling {@link List#subList}
+   * on the input list is safe.
    */
   public static <T> Stream<List<T>> generate(int minN, int maxN, List<T> list) {
     boundsCheck(minN, maxN);
