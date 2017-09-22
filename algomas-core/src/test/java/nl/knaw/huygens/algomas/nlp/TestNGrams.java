@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -56,8 +57,8 @@ public class TestNGrams {
   @Test
   public void simpleList() {
     List<List<String>> ngrams = ngramList(1, 1, "hello", "world");
-    assertEquals(asList("hello"), ngrams.get(0));
-    assertEquals(asList("world"), ngrams.get(1));
+    assertEquals(singletonList("hello"), ngrams.get(0));
+    assertEquals(singletonList("world"), ngrams.get(1));
     assertEquals(2, ngrams.size());
 
     ngrams = ngramList(2, 3, "hello", "n-gram", "world");
