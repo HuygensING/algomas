@@ -4,7 +4,7 @@ package nl.knaw.huygens.algomas.nlp;
  * #%L
  * algomas-core
  * %%
- * Copyright (C) 2016-2017 Huygens ING (KNAW)
+ * Copyright (C) 2017 Huygens ING (KNAW)
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -36,8 +36,9 @@ public class NGrams {
    * <p>
    * Calling {@link Stream#parallel} on this stream is safe, regardless of the type of input.
    * <p>
-   * The resulting CharSequences are not comparable with equals and not hashable.
-   * To store them, convert them to String with {@link #toString()}.
+   * The returned CharSequences compare equal to each other if they have equal length and content;
+   * i.e., {@code a.equals(b)} iff {@code a.toString().equals(b.toString()}.
+   * They do not compare equal to any other CharSequences, such as Strings.
    *
    * @return Returns a sequential stream of n-grams, represented as CharSequences.
    */

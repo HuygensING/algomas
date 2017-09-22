@@ -4,7 +4,7 @@ package nl.knaw.huygens.algomas.nlp;
  * #%L
  * algomas-core
  * %%
- * Copyright (C) 2016 Huygens ING (KNAW)
+ * Copyright (C) 2017 Huygens ING (KNAW)
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,10 +25,14 @@ package nl.knaw.huygens.algomas.nlp;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -71,6 +75,15 @@ public class TestNGrams {
 
     ngrams = ngramList(4, 5, "hello");
     assertEquals(0, ngrams.size());
+  }
+
+  @Test
+  public void hashAndEquals() {
+    Supplier<Stream<CharSequence>> gen = () -> NGrams.ofChars(2, 4, "abbcccdddd");
+    Supplier<Set<CharSequence>> set = () -> gen.get().collect(toSet());
+
+    assertEquals(set.get(), set.get());
+    assertTrue(set.get().size() < gen.get().count());
   }
 
   @Test

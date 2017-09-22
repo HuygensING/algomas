@@ -4,7 +4,7 @@ package nl.knaw.huygens.algomas.nlp;
  * #%L
  * algomas-core
  * %%
- * Copyright (C) 2016-2017 Huygens ING (KNAW)
+ * Copyright (C) 2017 Huygens ING (KNAW)
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -75,11 +75,29 @@ final class StringSlice implements CharSequence {
 
   @Override
   public boolean equals(Object other) {
-    throw new UnsupportedOperationException("StringSlices are not comparable, use toString()");
+    if (!(other instanceof StringSlice)) {
+      return false;
+    }
+    StringSlice that = (StringSlice) other;
+    if (this.len != that.len) {
+      return false;
+    }
+    for (int i = 0; i < len; i++) {
+      if (this.charAt(i) != that.charAt(i)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
   public int hashCode() {
-    throw new UnsupportedOperationException("StringSlices are not hashable, use toString()");
+    // 32-bit FNV1a, https://tools.ietf.org/html/draft-eastlake-fnv-13
+    int h = 0x811c9dc5;
+    for (int i = 0; i < len; i++) {
+      h ^= charAt(i);
+      h *= 0x01000193;
+    }
+    return h;
   }
 }
