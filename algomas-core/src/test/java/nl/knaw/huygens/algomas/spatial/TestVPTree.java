@@ -103,13 +103,12 @@ public class TestVPTree {
 
     for (int seed : SEEDS) {
       CountingMetric metric = new CountingMetric(baseMetric);
-      VPTree<String> tree = new VPTree<String>(metric, words,
-        new SplittableRandom(seed));
+      VPTree<String> tree = new VPTree<>(metric, words, new SplittableRandom(seed));
 
       assertEquals(words.size(), tree.size());
       assertEquals(words.size(),
         tree.stream().collect(Collectors.toSet()).size());
-      assertEquals(new HashSet<String>(words),
+      assertEquals(new HashSet<>(words),
         tree.stream().collect(Collectors.toSet()));
 
       VPTree.Entry<String> nearest = tree

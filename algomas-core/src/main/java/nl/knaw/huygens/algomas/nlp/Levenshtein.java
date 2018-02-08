@@ -88,10 +88,7 @@ public class Levenshtein {
         if (x.charAt(i - 1) == bj) {
           table[i] = prevDiag;
         } else {
-          table[i] = min(
-            table[i - 1] + 1,
-            table[i] + 1,
-            prevDiag + 1);
+          table[i] = min(table[i - 1], table[i], prevDiag) + 1;
         }
         prevDiag = currDiag;
       }
@@ -150,10 +147,7 @@ public class Levenshtein {
         if (x.charAt(i - 1) == bj) {
           table[i] = prevDiag;
         } else {
-          table[i] = min(
-            table[i - 1] + 1,
-            table[i] + 1,
-            prevDiag + 1);
+          table[i] = min(table[i - 1], table[i], prevDiag) + 1;
         }
         prevDiag = currDiag;
       }
