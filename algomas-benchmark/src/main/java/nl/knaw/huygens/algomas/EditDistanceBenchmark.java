@@ -27,7 +27,7 @@ import nl.knaw.huygens.algomas.editdist.AbstractLevenshtein;
 import nl.knaw.huygens.algomas.editdist.GenericLevenshtein;
 import nl.knaw.huygens.algomas.nlp.Levenshtein;
 import nl.knaw.huygens.algomas.nlp.LevenshteinDamerau;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
@@ -125,19 +125,19 @@ public class EditDistanceBenchmark {
     return pairwiseStrings(LevenshteinDamerau::distance);
   }
 
-  // As of Apache Commons-Lang 3.4, their Levenshtein implementation
+  // As of Apache commons-text 1.2, their Levenshtein implementation
   // lacks three of the optimizations that we have: skipping common
   // prefixes, skipping common suffixes, and storing a single row of
   // the DP matrix (they store two).
   @Benchmark
   public double commons() {
-    return pairwiseStrings(StringUtils::getLevenshteinDistance);
+    return pairwiseStrings(new LevenshteinDistance()::apply);
   }
 
   @Benchmark
   public double commonsBounded3() {
     return pairwiseStrings((a, b) -> {
-      int d = StringUtils.getLevenshteinDistance(a, b, 3);
+      int d = new LevenshteinDistance(3).apply(a, b);
       if (d == -1) {
         d = 4;
       }

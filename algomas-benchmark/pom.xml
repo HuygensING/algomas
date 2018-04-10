@@ -32,7 +32,7 @@ questions.
   <parent>
     <artifactId>algomas</artifactId>
     <groupId>nl.knaw.huygens.algomas</groupId>
-    <version>1.11.0</version>
+    <version>1.11.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -49,17 +49,22 @@ questions.
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>19.0</version>
+      <version>23.0</version>
     </dependency>
     <dependency>
       <groupId>nl.knaw.huygens.algomas</groupId>
       <artifactId>algomas-core</artifactId>
-      <version>1.11.0</version>
+      <version>1.11.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.4</version>
+      <artifactId>commons-math3</artifactId>
+      <version>3.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>org.openjdk.jmh</groupId>
@@ -76,7 +81,7 @@ questions.
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jmh.version>1.0</jmh.version>
+    <jmh.version>1.20</jmh.version>
     <javac.target>1.8</javac.target>
     <uberjar.name>benchmarks</uberjar.name>
   </properties>
