@@ -1,6 +1,17 @@
 # Algo más
 
-This is a library of general-purpose utilities for Java.
+This is a Java library of general-purpose algorithms, data structures and
+utilities. It supplements Apache Commons and Guava. Highlights include:
+
+* Connected components (union-find)
+* Levenshtein distance (edit distance) in several flavors
+* Math utilities
+* N-gram extraction
+* Partial sorting
+* Random sampling
+* VP-trees (spatial index structure)
+
+To use algomas, put the following in your pom.xml:
 
     <repository>
       <id>huygens</id>
