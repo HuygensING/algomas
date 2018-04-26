@@ -16,7 +16,7 @@ public class RandomGen {
    * @param list    List to shuffle.
    * @param nextInt Source of random numbers, e.g., {@link java.util.Random#nextInt(int)}.
    */
-  public static void shuffle(List list, IntUnaryOperator nextInt) {
+  public static <E> void shuffle(List<E> list, IntUnaryOperator nextInt) {
     // Fisher-Yates shuffle.
     for (int i = list.size(); --i > 0; ) {
       int r = nextInt.applyAsInt(i + 1);
