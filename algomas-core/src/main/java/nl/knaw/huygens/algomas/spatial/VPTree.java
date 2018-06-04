@@ -432,7 +432,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
     }
 
     double d = metric.distance(point, n.center);
-    if (d < radius) {
+    if (d <= radius) {
       nearest.offer(new Entry<>(n.center, d));
       if (nearest.size() > k) {
         nearest.poll();
@@ -477,7 +477,7 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
     }
 
     double d = metric.distance(point, n.center);
-    if (d < radius) {
+    if (d <= radius) {
       result.add(new Entry<>(n.center, d));
     }
 

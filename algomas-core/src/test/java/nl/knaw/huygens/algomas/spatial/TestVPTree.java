@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -192,5 +193,26 @@ public class TestVPTree {
     assertEquals(tree.size(), tree.stream().count());
     assertEquals(new HashSet<>(words), tree.stream().collect(Collectors.toSet()));
     assertEquals(new HashSet<>(words), tree.stream().parallel().collect(Collectors.toSet()));
+  }
+
+  @Test
+  public void distance0() {
+    List<String> keys = asList("foo", "foo", "foo", "bar", "bar", "baz");
+    VPTree<String> tree = new VPTree<>(Levenshtein::distance, keys);
+    assertEquals(singletonList("foo"),
+      tree.nearestNeighbors(1, 0, "foo")
+          .map(entry -> entry.point)
+          .collect(Collectors.toList())
+    );
+    assertEquals(keys.subList(0, 3),
+      tree.nearestNeighbors(3, 0, "foo")
+          .map(entry -> entry.point)
+          .collect(Collectors.toList())
+    );
+    assertEquals(keys.subList(0, 3),
+      tree.withinRadius("foo", 0)
+          .map(entry -> entry.point)
+          .collect(Collectors.toList())
+    );
   }
 }
