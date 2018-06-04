@@ -62,8 +62,8 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
   // Construction algorithm.
   @SuppressWarnings("serial")
   private final class ConstructTask extends RecursiveTask<Node<T>> {
-    double[] dist;
-    List<T> points;
+    private double[] dist;
+    private List<T> points;
     final SplittableRandom rnd;
 
     public ConstructTask(SplittableRandom rnd, List<T> points) {
