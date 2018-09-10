@@ -32,7 +32,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -49,29 +48,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TestVPTree {
+public class TestVPTree extends BaseTestSpatialTree {
   private static final int[] SEEDS = {1, 17, 19, 24};
-
-  private static final List<String> QUERY_WORDS = asList("static",
-    "final", "ImmutableList<String>", "String", "Levenshtein",
-    "Damerau", "Wagner", "Fischer", "Kruskal", "Wallis", "XYZZYFLUX",
-    "tree", "distance", "public", "private", "AtomicInteger", "Assert",
-    "filter", "map", "expected", "size", "words", "void", "BKTree",
-    "DamerauLevenshtein", "assertEquals", "concurrent", "atomic",
-    "class", "Java", "Builder", "Guava", "Apache", "Commons-lang",
-    "Python", "C", "C++", "Groovy", "Jython", "John Doe", "Jane Doe",
-    "Billybob", "ampersand", "edit distance", "VP-tree", "indel cost",
-    "transposition", "macromolecule", "time warping", "0123456789");
-
-  private static final List<String> words = new ArrayList<>();
-
-  static {
-    words.addAll(QUERY_WORDS);
-    QUERY_WORDS.stream()
-               .flatMap(x -> QUERY_WORDS.stream().map(y -> x + " -- " + y))
-               .forEachOrdered(words::add);
-    words.addAll(asList("foo", "bar", "baz", "quux"));
-  }
 
   // String metric that counts the number of calls made to it.
   private static class CountingMetric implements Metric<String> {
@@ -104,12 +82,12 @@ public class TestVPTree {
 
     for (int seed : SEEDS) {
       CountingMetric metric = new CountingMetric(baseMetric);
-      VPTree<String> tree = new VPTree<>(metric, words, new SplittableRandom(seed));
+      VPTree<String> tree = new VPTree<>(metric, WORDS, new SplittableRandom(seed));
 
-      assertEquals(words.size(), tree.size());
-      assertEquals(words.size(),
+      assertEquals(WORDS.size(), tree.size());
+      assertEquals(WORDS.size(),
         tree.stream().collect(Collectors.toSet()).size());
-      assertEquals(new HashSet<>(words),
+      assertEquals(new HashSet<>(WORDS),
         tree.stream().collect(Collectors.toSet()));
 
       VPTree.Entry<String> nearest = tree
@@ -137,7 +115,7 @@ public class TestVPTree {
     }
 
     assertTrue(totalCalls <=
-      (1 - savingFactor) * words.size() * QUERY_WORDS.size() * SEEDS.length);
+      (1 - savingFactor) * WORDS.size() * QUERY_WORDS.size() * SEEDS.length);
   }
 
   @Test
@@ -188,11 +166,11 @@ public class TestVPTree {
 
   @Test
   public void stream() {
-    VPTree<String> tree = new VPTree<>((a, b) -> Math.abs(a.charAt(0) - b.charAt(0)), words);
+    VPTree<String> tree = new VPTree<>((a, b) -> Math.abs(a.charAt(0) - b.charAt(0)), WORDS);
     assertEquals(tree.size(), tree.spliterator().estimateSize());
     assertEquals(tree.size(), tree.stream().count());
-    assertEquals(new HashSet<>(words), tree.stream().collect(Collectors.toSet()));
-    assertEquals(new HashSet<>(words), tree.stream().parallel().collect(Collectors.toSet()));
+    assertEquals(new HashSet<>(WORDS), tree.stream().collect(Collectors.toSet()));
+    assertEquals(new HashSet<>(WORDS), tree.stream().parallel().collect(Collectors.toSet()));
   }
 
   @Test
