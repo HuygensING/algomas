@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -119,6 +120,23 @@ public class TestVPTree extends BaseTestSpatialTree {
   }
 
   @Test
+  public void levenshteinPredicate() {
+    Collection<String> words = asList("foo", "fool", "bar", "bark", "quuxly", "long string", "very long string");
+    VPTree<String> tree = new VPTree<>(Levenshtein::distance, words, new SplittableRandom(555));
+    List<String> nearest1 = tree.nearestNeighbors(4, "foo")
+                                .map(e -> e.point)
+                                .filter(s -> !"foo".equals(s))
+                                .sorted()
+                                .collect(Collectors.toList());
+    assertEquals(3, nearest1.size());
+    List<String> nearest2 = tree.nearestNeighbors(3, "foo", s -> !"foo".equals(s))
+                                .map(e -> e.point)
+                                .sorted()
+                                .collect(Collectors.toList());
+    assertEquals(nearest1, nearest2);
+  }
+
+  @Test
   public void serializable() throws Exception {
     Random rnd = new Random(0xb000);
     List<Point2D> points = Stream.generate(() ->
@@ -129,6 +147,7 @@ public class TestVPTree extends BaseTestSpatialTree {
 
     ByteArrayOutputStream buf = new ByteArrayOutputStream();
     new ObjectOutputStream(buf).writeObject(tree);
+    //noinspection unchecked
     VPTree<Point2D> reconstructed = (VPTree<Point2D>) new ObjectInputStream(
       new ByteArrayInputStream(buf.toByteArray())).readObject();
     assertEquals(tree.size(), reconstructed.size());

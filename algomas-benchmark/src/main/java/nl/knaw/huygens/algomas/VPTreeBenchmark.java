@@ -77,7 +77,7 @@ public class VPTreeBenchmark {
          .forEach(QUERIES::add);
   }
 
-  private static final VPTree<String> makeTree() {
+  private static VPTree<String> makeTree() {
     return new VPTree<>(Levenshtein::distance, TO_INDEX);
   }
 

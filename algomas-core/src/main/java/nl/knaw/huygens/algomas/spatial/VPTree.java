@@ -26,17 +26,18 @@ import nl.knaw.huygens.algomas.stat.RandomGen;
 
 import java.io.Serializable;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Spliterator;
 import java.util.SplittableRandom;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -407,53 +408,56 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
   }
 
   /**
+   * Finds the k nearest neighbors of the given point, restricted to a subset
+   * of the points in the tree.
+   * <p>
+   * Returns a stream of entries containing neighbor points and their distance
+   * from the query point. The points are not necessarily sorted w.r.t. their
+   * distance from the query point.
+   *
+   * @param k         Number of neighbors to collect.
+   * @param point     Query point.
+   * @param predicate Predicate that returned points must satisfy.
+   */
+  public final Stream<Entry<T>> nearestNeighbors(int k, T point, Predicate<? super T> predicate) {
+    return nearestNeighbors(k, Double.POSITIVE_INFINITY, point, predicate);
+  }
+
+  /**
    * Finds the k nearest neighbors of the given point, restricted to a search
    * radius.
    * <p>
    * Returns a stream of entries containing neighbor points and their distance
-   * from the query point.
+   * from the query point. The points are not necessarily sorted w.r.t. their
+   * distance from the query point.
    *
    * @param k      Number of neighbors to collect.
    * @param radius Neighbors must be at distance <= radius from the query point.
    * @param point  Query point.
    */
   public final Stream<Entry<T>> nearestNeighbors(int k, double radius, T point) {
+    return nearestNeighbors(k, radius, point, x -> true);
+  }
+
+  /**
+   * Finds the k nearest neighbors of the given point, restricted to a subset
+   * of the points in the tree.
+   * <p>
+   * Returns a stream of entries containing neighbor points and their distance
+   * from the query point. The points are not necessarily sorted w.r.t. their
+   * distance from the query point.
+   *
+   * @param k         Number of neighbors to collect.
+   * @param radius    Neighbors must be at distance <= radius from the query point.
+   * @param point     Query point.
+   * @param predicate Predicate that returned points must satisfy.
+   */
+  public final Stream<Entry<T>> nearestNeighbors(int k, double radius, T point, Predicate<? super T> predicate) {
     // Max priority queue sorted on distance from query point.
     Comparator<Entry<T>> byDistance = comparing(e -> e.distance);
     PriorityQueue<Entry<T>> nearest = new PriorityQueue<>(k + 1, reverseOrder(byDistance));
-    nearestNeighbors(root, k, point, radius, nearest);
+    search(root, k, point, radius, predicate, nearest);
     return nearest.stream();
-  }
-
-  private double nearestNeighbors(Node<T> n, int k, T point, double radius,
-                                  PriorityQueue<Entry<T>> nearest) {
-    if (n == null) {
-      return radius;
-    }
-
-    double d = metric.distance(point, n.center);
-    if (d <= radius) {
-      nearest.offer(new Entry<>(n.center, d));
-      if (nearest.size() > k) {
-        nearest.poll();
-      }
-      if (nearest.size() == k) {
-        radius = nearest.peek().distance;
-      }
-    }
-
-    if (d < n.radius) {
-      radius = nearestNeighbors(n.inside, k, point, radius, nearest);
-      if (d + radius >= n.radius) {
-        radius = nearestNeighbors(n.outside, k, point, radius, nearest);
-      }
-    } else {
-      radius = nearestNeighbors(n.outside, k, point, radius, nearest);
-      if (d - radius <= n.radius) {
-        radius = nearestNeighbors(n.inside, k, point, radius, nearest);
-      }
-    }
-    return radius;
   }
 
   /**
@@ -466,32 +470,58 @@ public final class VPTree<T> implements Iterable<T>, Serializable {
    * @param point  Query point.
    */
   public Stream<Entry<T>> withinRadius(T point, double radius) {
-    List<Entry<T>> result = new ArrayList<>();
-    withinRadius(root, point, radius, result);
+    return withinRadius(point, radius, x -> true);
+  }
+
+  /**
+   * Finds all points within the given radius of the given point that satisfy a predicate.
+   * <p>
+   * Returns a stream of entries containing neighbor points and their distance
+   * from the query point.
+   *
+   * @param radius    Neighbors must be at distance <= radius from the query point.
+   * @param point     Query point.
+   * @param predicate Predicate that returned points must satisfy.
+   */
+  public Stream<Entry<T>> withinRadius(T point, double radius, Predicate<? super T> predicate) {
+    Queue<Entry<T>> result = new ArrayDeque<>();
+    search(root, size(), point, radius, predicate, result);
     return result.stream();
   }
 
-  private void withinRadius(Node<T> n, T point, double radius, List<Entry<T>> result) {
+  // Branch-and-bound search algorithm. Fills the Queue result with at most k points
+  // that live within radius of point and satisfy the predicate. If result is a
+  // priority queue ordered on distance, these k points will be the k nearest neighbors
+  // of point within the set of points that satisfy the predicate.
+  private double search(Node<T> n, int k, T point, double radius, Predicate<? super T> predicate,
+                        Queue<Entry<T>> result) {
     if (n == null) {
-      return;
+      return radius;
     }
 
     double d = metric.distance(point, n.center);
-    if (d <= radius) {
-      result.add(new Entry<>(n.center, d));
+    if (d <= radius && predicate.test(n.center)) {
+      result.offer(new Entry<>(n.center, d));
+      if (result.size() > k) {
+        result.poll();
+      }
+      if (result.size() == k) {
+        radius = result.peek().distance;
+      }
     }
 
     if (d < n.radius) {
-      withinRadius(n.inside, point, radius, result);
+      radius = search(n.inside, k, point, radius, predicate, result);
       if (d + radius >= n.radius) {
-        withinRadius(n.outside, point, radius, result);
+        radius = search(n.outside, k, point, radius, predicate, result);
       }
     } else {
-      withinRadius(n.outside, point, radius, result);
+      radius = search(n.outside, k, point, radius, predicate, result);
       if (d - radius <= n.radius) {
-        withinRadius(n.inside, point, radius, result);
+        radius = search(n.inside, k, point, radius, predicate, result);
       }
     }
+    return radius;
   }
 
   public int size() {
