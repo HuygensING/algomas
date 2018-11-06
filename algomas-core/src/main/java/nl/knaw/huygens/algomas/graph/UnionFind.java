@@ -40,12 +40,13 @@ public class UnionFind {
   /**
    * Find the representative of set x.
    */
-  public int find(int x) {
-    int p = parent[x];
-    if (p != x) {
-      p = parent[x] = find(p);
+  public final int find(int x) {
+    // Find with path halving, https://www.cs.princeton.edu/~rs/AlgsDS07/01UnionFind.pdf
+    while (x != parent[x]) {
+      parent[x] = parent[parent[x]];
+      x = parent[x];
     }
-    return p;
+    return x;
   }
 
   /**
@@ -60,19 +61,19 @@ public class UnionFind {
    *
    * @return true iff x and y where previously in disjoint sets.
    */
-  public boolean union(int x, int y) {
-    int px = find(x);
-    int py = find(y);
-    if (px == py) {
+  public final boolean union(int x, int y) {
+    x = find(x);
+    y = find(y);
+    if (x == y) {
       return false;
     }
 
     if (rank[x] < rank[y]) {
-      parent[x] = py;
+      parent[x] = y;
     } else if (rank[x] > rank[y]) {
-      parent[y] = px;
+      parent[y] = x;
     } else {
-      parent[y] = px;
+      parent[y] = x;
       rank[y]++;
     }
     return true;

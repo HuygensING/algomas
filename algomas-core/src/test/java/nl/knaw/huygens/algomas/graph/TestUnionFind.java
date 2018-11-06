@@ -22,7 +22,6 @@ package nl.knaw.huygens.algomas.graph;
  * #L%
  */
 
-import nl.knaw.huygens.algomas.graph.UnionFind;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -53,7 +52,9 @@ public class TestUnionFind {
     assertEquals(sets.find(3), sets.find(4));
 
     assertTrue(sets.union(1, 3));
+    assertEquals(sets.find(1), sets.find(3));
     assertTrue(sets.union(2, 3));
+    assertEquals(sets.find(2), sets.find(3));
     assertEquals(sets.find(1), sets.find(4));
     assertFalse(sets.union(4, 1));
 
@@ -71,5 +72,24 @@ public class TestUnionFind {
       }
     }
     assertEquals(1, nsets);
+  }
+
+  // Regression test for faulty union algorithm that broke chains.
+  @Test
+  public void regression() {
+    UnionFind uf = new UnionFind(5);
+
+    int n = 5;
+    n -= uf.union(1, 2) ? 1 : 0;
+    n -= uf.union(2, 3) ? 1 : 0;
+    n -= uf.union(3, 4) ? 1 : 0;
+    n -= uf.union(0, 3) ? 1 : 0;
+
+    assertEquals(1, n);
+
+    int repr = uf.find(0);
+    for (int i = 1; i < uf.size(); i++) {
+      assertEquals(repr, uf.find(1));
+    }
   }
 }
