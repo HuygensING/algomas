@@ -122,7 +122,6 @@ public class TestBKTree extends BaseTestSpatialTree {
     BKTree<String> tree = new BKTree<>((a, b) -> Math.abs(a.charAt(0) - b.charAt(0)), WORDS);
     assertEquals(tree.size(), tree.spliterator().estimateSize());
     assertEquals(tree.size(), tree.stream().count());
-    System.out.println(tree.stream().collect(Collectors.toSet()));
     assertEquals(new HashSet<>(WORDS), tree.stream().collect(Collectors.toSet()));
     assertEquals(new HashSet<>(WORDS), tree.stream().parallel().collect(Collectors.toSet()));
   }
