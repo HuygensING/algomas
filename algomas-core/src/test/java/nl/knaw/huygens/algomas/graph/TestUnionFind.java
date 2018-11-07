@@ -89,7 +89,7 @@ public class TestUnionFind {
 
     int repr = uf.find(0);
     for (int i = 1; i < uf.size(); i++) {
-      assertEquals(repr, uf.find(1));
+      assertEquals(repr, uf.find(i));
     }
   }
 }
