@@ -27,15 +27,13 @@ package nl.knaw.huygens.algomas.nlp;
  * <p>
  * In Java 7, String.substring changed to a linear-memory implementation (a copy). This class replaces that method
  * for applications where such copying behavior is not acceptable.
- * <p>
- * TODO: make this public?
  */
-final class StringSlice implements CharSequence {
+public final class StringSlice implements CharSequence {
   private final String str;
   private final int offset;
   private final int len;
 
-  StringSlice(String s, int from, int to) {
+  public StringSlice(String s, int from, int to) {
     this(from, to, s);
     check(from, to, s);
   }
